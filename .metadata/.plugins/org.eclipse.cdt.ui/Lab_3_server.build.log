@@ -1,62 +1,7 @@
-09:11:50 **** Incremental Build of configuration Debug for project Lab_3_server ****
-make all 
-Building file: ../src/Lab_3_server.c
-Invoking: Cross GCC Compiler
-gcc -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/atk-1.0 -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_3_server.d" -MT"src/Lab_3_server.o" -o "src/Lab_3_server.o" "../src/Lab_3_server.c"
-../src/Lab_3_server.c: In function ‘calculate_planet_pos’:
-../src/Lab_3_server.c:78:26: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
-     double G = 6.67259 * pow(10, -11); //Declaration of the gravitational constant
-                          ^~~
-../src/Lab_3_server.c:78:26: warning: incompatible implicit declaration of built-in function ‘pow’
-../src/Lab_3_server.c:78:26: note: include ‘<math.h>’ or provide a declaration of ‘pow’
-../src/Lab_3_server.c:85:17: warning: implicit declaration of function ‘sqrt’ [-Wimplicit-function-declaration]
-             r = sqrt(pow(x, 2.0) + pow(y, 2.0));
-                 ^~~~
-../src/Lab_3_server.c:85:17: warning: incompatible implicit declaration of built-in function ‘sqrt’
-../src/Lab_3_server.c:85:17: note: include ‘<math.h>’ or provide a declaration of ‘sqrt’
-../src/Lab_3_server.c: In function ‘main’:
-../src/Lab_3_server.c:124:41: warning: passing argument 2 of ‘gtk_widget_add_tick_callback’ from incompatible pointer type [-Wincompatible-pointer-types]
-     gtk_widget_add_tick_callback(darea, on_frame_tick, NULL, 1); //Add timer callback functionality for darea
-                                         ^~~~~~~~~~~~~
-In file included from /usr/include/gtk-3.0/gtk/gtkapplication.h:27:0,
-                 from /usr/include/gtk-3.0/gtk/gtkwindow.h:33,
-                 from /usr/include/gtk-3.0/gtk/gtkdialog.h:32,
-                 from /usr/include/gtk-3.0/gtk/gtkaboutdialog.h:30,
-                 from /usr/include/gtk-3.0/gtk/gtk.h:31,
-                 from ../src/Lab_3_server.c:2:
-/usr/include/gtk-3.0/gtk/gtkwidget.h:1334:7: note: expected ‘GtkTickCallback {aka int (*)(struct _GtkWidget *, struct _GdkFrameClock *, void *)}’ but argument is of type ‘gboolean (* (*)(GtkWidget *, GdkFrameClock *, void *))(GtkWidget *, GdkFrameClock *, void *) {aka int (* (*)(struct _GtkWidget *, struct _GdkFrameClock *, void *))(struct _GtkWidget *, struct _GdkFrameClock *, void *)}’
- guint gtk_widget_add_tick_callback (GtkWidget       *widget,
-       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../src/Lab_3_server.c:124:62: warning: passing argument 4 of ‘gtk_widget_add_tick_callback’ makes pointer from integer without a cast [-Wint-conversion]
-     gtk_widget_add_tick_callback(darea, on_frame_tick, NULL, 1); //Add timer callback functionality for darea
-                                                              ^
-In file included from /usr/include/gtk-3.0/gtk/gtkapplication.h:27:0,
-                 from /usr/include/gtk-3.0/gtk/gtkwindow.h:33,
-                 from /usr/include/gtk-3.0/gtk/gtkdialog.h:32,
-                 from /usr/include/gtk-3.0/gtk/gtkaboutdialog.h:30,
-                 from /usr/include/gtk-3.0/gtk/gtk.h:31,
-                 from ../src/Lab_3_server.c:2:
-/usr/include/gtk-3.0/gtk/gtkwidget.h:1334:7: note: expected ‘GDestroyNotify {aka void (*)(void *)}’ but argument is of type ‘int’
- guint gtk_widget_add_tick_callback (GtkWidget       *widget,
-       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../src/Lab_3_server.c:106:12: warning: unused variable ‘i_am_thread’ [-Wunused-variable]
-  pthread_t i_am_thread;
-            ^~~~~~~~~~~
-../src/Lab_3_server.c: In function ‘planet_thread’:
-../src/Lab_3_server.c:22:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-../src/Lab_3_server.c: In function ‘on_frame_tick’:
-../src/Lab_3_server.c:63:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-Finished building: ../src/Lab_3_server.c
- 
-Building target: Lab_3_server
-Invoking: Cross GCC Linker
-gcc  -o "Lab_3_server"  ./src/Lab_3_server.o ./src/wrapper.o   -lpthread -lm -lgdk-3 -lgobject-2.0 -lglib-2.0 -lgtk-3 -lcairo -lrt
-Finished building target: Lab_3_server
+12:36:06 **** Clean-only build of configuration Debug for project Lab_3_server ****
+make clean 
+rm -rf  ./src/Lab_3_server.o ./src/wrapper.o  ./src/Lab_3_server.d ./src/wrapper.d  Lab_3_server
  
 
-09:11:51 Build Finished. 0 errors, 9 warnings. (took 641ms)
+12:36:06 Build Finished. 0 errors, 0 warnings. (took 339ms)
 

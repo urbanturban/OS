@@ -1,6 +1,7 @@
-13:24:23 **** Incremental Build of configuration Debug for project Lab_2 ****
-make all 
-make: Nothing to be done for 'all'.
+12:36:05 **** Clean-only build of configuration Debug for project Lab_2 ****
+make clean 
+rm -rf  ./src/Lab_2.o  ./src/Lab_2.d  Lab_2
+ 
 
-13:24:23 Build Finished. 0 errors, 0 warnings. (took 86ms)
+12:36:06 Build Finished. 0 errors, 0 warnings. (took 209ms)
 
