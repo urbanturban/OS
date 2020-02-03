@@ -22,7 +22,10 @@ int MQconnect (mqd_t * mq, char * name)
 {
     /* Connects to an existing mailslot for writing Uses mq as reference pointer, so that you can 	reach the handle from anywhere*/
     /* Should return 1 on success and 0 on fail*/
-	return 1; //change
+
+	mq = mq_open(name, O_RDONLY);
+	if(mq != -1) return 1;
+	else return 0;
 }
 
 void * MQread (mqd_t mq, void ** buffer)

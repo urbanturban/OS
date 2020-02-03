@@ -1104,3 +1104,158 @@ Finished building target: Lab_1
 13:21:44 **** Incremental Build of configuration Debug for project Lab_1 ****
 make all 
 make: Nothing to be done for 'all'.
+13:42:20 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘main’:
+../src/Main.c:14:32: error: ‘server’ undeclared (first use in this function); did you mean ‘strsep’?
+  pthread_create(&sthread, NULL,server, NULL);
+                                ^~~~~~
+                                strsep
+../src/Main.c:14:32: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [src/Main.o] Error 1
+src/subdir.mk:24: recipe for target 'src/Main.o' failed
+"make all" terminated with exit code 2. Build might be incomplete.
+13:43:03 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘main’:
+../src/Main.c:16:32: warning: passing argument 3 of ‘pthread_create’ from incompatible pointer type [-Wincompatible-pointer-types]
+  pthread_create(&sthread, NULL,server, NULL);
+                                ^~~~~~
+In file included from ../src/wrapper.h:11:0,
+                 from ../src/Main.c:1:
+/usr/include/pthread.h:234:12: note: expected ‘void * (*)(void *)’ but argument is of type ‘void (*)(void)’
+ extern int pthread_create (pthread_t *__restrict __newthread,
+            ^~~~~~~~~~~~~~
+../src/Main.c: At top level:
+../src/Main.c:19:7: error: conflicting types for ‘server’
+ void *server(void *arg){
+       ^~~~~~
+../src/Main.c:12:6: note: previous declaration of ‘server’ was here
+ void server(void);
+      ^~~~~~
+../src/Main.c:26:7: error: conflicting types for ‘client’
+ void *client(void *arg){
+       ^~~~~~
+../src/Main.c:13:6: note: previous declaration of ‘client’ was here
+ void client(void);
+      ^~~~~~
+src/subdir.mk:24: recipe for target 'src/Main.o' failed
+make: *** [src/Main.o] Error 1
+"make all" terminated with exit code 2. Build might be incomplete.
+13:46:24 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+13:46:31 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+13:48:30 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+13:48:32 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+13:57:16 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/wrapper.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/wrapper.d" -MT"src/wrapper.o" -o "src/wrapper.o" "../src/wrapper.c"
+../src/wrapper.c: In function ‘MQcreate’:
+../src/wrapper.c:16:5: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(name, O_CREAT|O_RDWR|O_NONBLOCK,0666, &our_mq_attr);
+     ^
+../src/wrapper.c:17:8: warning: comparison between pointer and integer
+  if(mq != -1) return 1;
+        ^~
+../src/wrapper.c: In function ‘MQconnect’:
+../src/wrapper.c:26:5: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(name, O_RDONLY);
+     ^
+../src/wrapper.c:27:8: warning: comparison between pointer and integer
+  if(mq != -1) return 1;
+        ^~
+../src/wrapper.c: In function ‘MQread’:
+../src/wrapper.c:36:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/wrapper.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+14:05:57 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+14:06:01 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+14:06:31 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+14:06:33 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+14:06:43 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+14:06:48 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+14:07:06 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+14:07:09 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
