@@ -1,0 +1,29 @@
+/*
+ ============================================================================
+ Name        : Lab_1.c
+ Author      : Jakob Danielsson
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "wrapper.h"
+#include <pthread.h>
+
+
+int main(int ac, char * argv)
+{
+	pthread_t hej;
+	printf("Hello world!");
+}
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void *hello_moon(void *arg){
+	pthread_mutex_unluck(&mutex);
+}
+
+

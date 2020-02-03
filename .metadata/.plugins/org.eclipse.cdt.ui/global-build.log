@@ -1,0 +1,433 @@
+08:35:31 **** Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:17:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘main’:
+../src/Lab_1.c:19:12: warning: unused variable ‘hej’ [-Wunused-variable]
+  pthread_t hej;
+            ^~~
+Finished building: ../src/Lab_1.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/wrapper.o   -lrt
+Finished building target: Lab_1
+ 
+08:36:33 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+08:50:44 **** Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+08:50:50 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+09:53:18 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:18:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘main’:
+../src/Lab_1.c:21:33: error: ‘hello_world’ undeclared (first use in this function)
+  pthread_create(&thread1, NULL, hello_world, NULL);
+                                 ^~~~~~~~~~~
+../src/Lab_1.c:21:33: note: each undeclared identifier is reported only once for each function it appears in
+../src/Lab_1.c:22:33: error: ‘hello_moon’ undeclared (first use in this function); did you mean ‘hello_world’?
+  pthread_create(&thread2, NULL, hello_moon, NULL);
+                                 ^~~~~~~~~~
+                                 hello_world
+../src/Lab_1.c: In function ‘hello_moon’:
+src/subdir.mk:21: recipe for target 'src/Lab_1.o' failed
+../src/Lab_1.c:39:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:48:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+make: *** [src/Lab_1.o] Error 1
+"make all" terminated with exit code 2. Build might be incomplete.
+09:54:04 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:38:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:27:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:36:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Lab_1.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+09:54:19 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+10:00:44 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:21:23: error: ‘mutex’ undeclared (first use in this function)
+   pthread_mutex_lock(&mutex);
+                       ^~~~~
+../src/Lab_1.c:21:23: note: each undeclared identifier is reported only once for each function it appears in
+../src/Lab_1.c: In function ‘hello_world’:
+src/subdir.mk:21: recipe for target 'src/Lab_1.o' failed
+../src/Lab_1.c:31:23: error: ‘mutex’ undeclared (first use in this function)
+   pthread_mutex_lock(&mutex);
+                       ^~~~~
+../src/Lab_1.c: At top level:
+../src/Lab_1.c:38:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘main’:
+../src/Lab_1.c:40:18: warning: unused variable ‘mutex’ [-Wunused-variable]
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+                  ^~~~~
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:27:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:36:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+make: *** [src/Lab_1.o] Error 1
+"make all" terminated with exit code 2. Build might be incomplete.
+10:01:11 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:39:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:28:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:37:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Lab_1.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+10:01:14 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+10:02:21 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:39:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:28:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:37:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Lab_1.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+10:02:25 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+10:57:29 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c:39:5: warning: second argument of ‘main’ should be ‘char **’ [-Wmain]
+ int main(int ac, char * argv)
+     ^~~~
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:28:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:37:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Lab_1.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:04:41 **** Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+Finished building: ../src/Main.c
+ 
+Building file: ../src/wrapper.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/wrapper.d" -MT"src/wrapper.o" -o "src/wrapper.o" "../src/wrapper.c"
+../src/wrapper.c: In function ‘MQcreate’:
+../src/wrapper.c:12:15: warning: passing argument 1 of ‘mq_open’ makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(*name, O_CREAT |O_RDWR| O_NONBLOCK);
+               ^
+In file included from ../src/wrapper.h:10:0,
+                 from ../src/wrapper.c:1:
+/usr/include/mqueue.h:38:14: note: expected ‘const char *’ but argument is of type ‘char’
+ extern mqd_t mq_open (const char *__name, int __oflag, ...)
+              ^~~~~~~
+../src/wrapper.c:12:5: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(*name, O_CREAT |O_RDWR| O_NONBLOCK);
+     ^
+../src/wrapper.c: In function ‘MQconnect’:
+../src/wrapper.c:21:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/wrapper.c: In function ‘MQread’:
+../src/wrapper.c:28:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/wrapper.c: In function ‘MQwrite’:
+../src/wrapper.c:34:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/wrapper.c: In function ‘MQclose’:
+../src/wrapper.c:41:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/wrapper.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:04:51 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:12:53 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Lab_1.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Lab_1.d" -MT"src/Lab_1.o" -o "src/Lab_1.o" "../src/Lab_1.c"
+../src/Lab_1.c: In function ‘hello_moon’:
+../src/Lab_1.c:28:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/Lab_1.c: In function ‘hello_world’:
+../src/Lab_1.c:37:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Lab_1.c
+ 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘server’:
+../src/Main.c:14:6: warning: passing argument 1 of ‘puts’ makes pointer from integer without a cast [-Wint-conversion]
+ puts(status);
+      ^~~~~~
+In file included from ../src/wrapper.h:5:0,
+                 from ../src/Main.c:1:
+/usr/include/stdio.h:632:12: note: expected ‘const char *’ but argument is of type ‘int’
+ extern int puts (const char *__s);
+            ^~~~
+../src/Main.c:15:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:13:34 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:13:41 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:13:48 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:14:20 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:14:44 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:16:28 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/wrapper.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/wrapper.d" -MT"src/wrapper.o" -o "src/wrapper.o" "../src/wrapper.c"
+../src/wrapper.c: In function ‘MQcreate’:
+../src/wrapper.c:12:15: warning: passing argument 1 of ‘mq_open’ makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(*name, O_CREAT |O_RDWR| O_NONBLOCK);
+               ^
+In file included from ../src/wrapper.h:10:0,
+                 from ../src/wrapper.c:1:
+/usr/include/mqueue.h:38:14: note: expected ‘const char *’ but argument is of type ‘char’
+ extern mqd_t mq_open (const char *__name, int __oflag, ...)
+              ^~~~~~~
+../src/wrapper.c:12:5: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+  mq = mq_open(*name, O_CREAT |O_RDWR| O_NONBLOCK);
+     ^
+../src/wrapper.c: In function ‘MQread’:
+../src/wrapper.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/wrapper.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:17:21 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/wrapper.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/wrapper.d" -MT"src/wrapper.o" -o "src/wrapper.o" "../src/wrapper.c"
+../src/wrapper.c: In function ‘MQcreate’:
+../src/wrapper.c:12:16: warning: passing argument 1 of ‘mq_open’ makes pointer from integer without a cast [-Wint-conversion]
+  *mq = mq_open(*name, O_CREAT |O_RDWR| O_NONBLOCK);
+                ^
+In file included from ../src/wrapper.h:10:0,
+                 from ../src/wrapper.c:1:
+/usr/include/mqueue.h:38:14: note: expected ‘const char *’ but argument is of type ‘char’
+ extern mqd_t mq_open (const char *__name, int __oflag, ...)
+              ^~~~~~~
+../src/wrapper.c: In function ‘MQread’:
+../src/wrapper.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/wrapper.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:17:42 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:18:46 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘server’:
+../src/Main.c:13:19: error: invalid type argument of unary ‘*’ (have ‘mqd_t {aka int}’)
+ status = MQcreate(*my_mq, *MY_MQ);
+                   ^~~~~~
+../src/Main.c:13:27: warning: passing argument 2 of ‘MQcreate’ makes pointer from integer without a cast [-Wint-conversion]
+ status = MQcreate(*my_mq, *MY_MQ);
+                           ^
+In file included from ../src/Main.c:1:0:
+../src/wrapper.h:15:12: note: expected ‘char *’ but argument is of type ‘char’
+src/subdir.mk:24: recipe for target 'src/Main.o' failed
+ extern int MQcreate (mqd_t * mq, char * name);
+            ^~~~~~~~
+../src/Main.c:14:6: warning: passing argument 1 of ‘puts’ makes pointer from integer without a cast [-Wint-conversion]
+ puts(status);
+      ^~~~~~
+In file included from ../src/wrapper.h:5:0,
+                 from ../src/Main.c:1:
+/usr/include/stdio.h:632:12: note: expected ‘const char *’ but argument is of type ‘int’
+ extern int puts (const char *__s);
+            ^~~~
+../src/Main.c:15:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+make: *** [src/Main.o] Error 1
+"make all" terminated with exit code 2. Build might be incomplete.
+17:19:27 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘server’:
+../src/Main.c:14:6: warning: passing argument 1 of ‘puts’ makes pointer from integer without a cast [-Wint-conversion]
+ puts(status);
+      ^~~~~~
+In file included from ../src/wrapper.h:5:0,
+                 from ../src/Main.c:1:
+/usr/include/stdio.h:632:12: note: expected ‘const char *’ but argument is of type ‘int’
+ extern int puts (const char *__s);
+            ^~~~
+../src/Main.c:15:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:19:28 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:19:56 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+Building file: ../src/Main.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Main.d" -MT"src/Main.o" -o "src/Main.o" "../src/Main.c"
+../src/Main.c: In function ‘server’:
+../src/Main.c:14:6: warning: passing argument 1 of ‘puts’ makes pointer from integer without a cast [-Wint-conversion]
+ puts(status);
+      ^~~~~~
+In file included from ../src/wrapper.h:5:0,
+                 from ../src/Main.c:1:
+/usr/include/stdio.h:632:12: note: expected ‘const char *’ but argument is of type ‘int’
+ extern int puts (const char *__s);
+            ^~~~
+../src/Main.c:15:8: warning: return makes pointer from integer without a cast [-Wint-conversion]
+ return status;
+        ^~~~~~
+Finished building: ../src/Main.c
+ 
+Building target: Lab_1
+Invoking: Cross GCC Linker
+gcc  -o "Lab_1"  ./src/Lab_1.o ./src/Main.o ./src/wrapper.o   -lrt -lpthread
+Finished building target: Lab_1
+ 
+17:19:59 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.
+17:20:03 **** Incremental Build of configuration Debug for project Lab_1 ****
+make all 
+make: Nothing to be done for 'all'.

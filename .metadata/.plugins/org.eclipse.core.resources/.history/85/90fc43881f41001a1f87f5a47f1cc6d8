@@ -1,0 +1,14 @@
+#include "wrapper.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+void *server(void *arg){
+int status;
+}
+
+
+int main() {
+
+}

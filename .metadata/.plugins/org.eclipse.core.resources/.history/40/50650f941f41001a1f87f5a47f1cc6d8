@@ -1,0 +1,16 @@
+#include "wrapper.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#define MY_MQ "/MY_MQ"
+void *server(void *arg){
+int status;
+status = MQcreate(&my_mq, MY_MQ);
+}
+
+
+int main() {
+
+}

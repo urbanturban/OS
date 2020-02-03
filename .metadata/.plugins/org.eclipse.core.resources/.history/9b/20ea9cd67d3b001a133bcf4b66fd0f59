@@ -1,0 +1,21 @@
+/*
+ ============================================================================
+ Name        : Lab_1.c
+ Author      : Jakob Danielsson
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "wrapper.h"
+#include <mqueue.h>
+
+int main(int ac, char * argv)
+{
+	pthread_t hej;
+	mqd_t
+	printf("Hello world!");
+}

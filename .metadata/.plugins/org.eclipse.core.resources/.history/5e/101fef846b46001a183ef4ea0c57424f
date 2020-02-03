@@ -1,0 +1,24 @@
+#include "wrapper.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#define MY_MQ "/MY_MQ"
+pthread_t server_thread, client_thread;
+mqd_t my_mq;
+
+void *server(void *arg){
+int status;
+status = MQcreate(&my_mq, MY_MQ);
+puts(status);
+return status;
+}
+
+
+int main() {
+	pthread_create(&server_thread, NULL, server, NULL);
+	while(1){
+
+	}
+}
