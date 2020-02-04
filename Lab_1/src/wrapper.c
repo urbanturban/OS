@@ -36,7 +36,7 @@ void * MQread (mqd_t mq, void ** buffer)
     /* should return number of bytes read              */
 	int nbytes;
 	int prio = 0;
-	nbytes = mq_receive(mq, (char*)buffer, 1034, &prio);
+	nbytes = mq_receive(mq, (char*)buffer, 1034, NULL);
 	return nbytes;
 
 }
@@ -46,8 +46,8 @@ int MQwrite (mqd_t mq, void * sendBuffer)
     /* Write a msg to a mailslot, return nr Uses mq as reference pointer, so that you can 	     reach the handle from anywhere*/
     /* should return number of bytes read         */
 	int status;
-	printf("MQwrite ser detta %s", (char*)sendBuffer);
-	status = mq_send(mq, &sendBuffer, strlen(sendBuffer)+1, 0);
+	printf("MQwrite writing: %s",sendBuffer);
+	status = mq_send(mq, sendBuffer, strlen(sendBuffer)+1, NULL);
 
 	//TODO return no of bytes read?
 	if(status != -1) return 1;
