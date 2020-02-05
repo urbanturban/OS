@@ -46,7 +46,6 @@ int MQwrite (mqd_t mq, void * sendBuffer)
     /* Write a msg to a mailslot, return nr Uses mq as reference pointer, so that you can 	     reach the handle from anywhere*/
     /* should return number of bytes read         */
 	int status;
-	printf("MQwrite writing: %s",sendBuffer);
 	status = mq_send(mq, sendBuffer, strlen(sendBuffer)+1, NULL);
 
 	//TODO return no of bytes read?
@@ -59,7 +58,10 @@ int MQclose(mqd_t * mq, char * name)
     /* close a mailslot, returning whatever the service call returns Uses mq as reference pointer, so that you can
     reach the handle from anywhere*/
     /* Should return 1 on success and 0 on fail*/
-	return 1;
+	int status;
+	status = mq_close(*mq);
+	if(status != -1) return 1;
+	else return 0;
 }
 
 

@@ -11,49 +11,54 @@
 static mqd_t our_mq, client_mq; //Message queue descriptors
 pthread_t sthread, cthread;
 
-
+//server creates MQ, takes input text from stdin, writes it to MQ, closes MQ if "END" is sent and exits thread.
 void *server(void *arg){
-	printf("%d\n", MQcreate(&our_mq, MQ_NAME));
-	printf("MQcreate: %s\n", strerror(errno));
+	if (MQcreate(&our_mq, MQ_NAME) == 0) {
+		printf("MQcreate: %s\n", strerror(errno));
+	}
 	char msg[20];
+	printf("Type message to send to MQ, type END to exit\n");
 	while(1){
 		fgets(&msg, 20, stdin);
-		MQwrite(our_mq, msg);
-		printf("MQwrite:  %s\n", strerror(errno));
+		printf("Server: %s", msg);
+		if (MQwrite(our_mq, msg) == 0) {
+			printf("MQwrite:  %s\n", strerror(errno));
+		}
 		if(strcmp(msg,"END\n") == 0){ //fgets includes newline from input
-			printf("Exiting server thread.\n");
+			if (MQclose(&our_mq, MQ_NAME) == 0) { //mq_close wont use name...redudant
+				printf("MQclose:  %s\n", strerror(errno));
+			}
 			pthread_exit(&sthread);
 		}
-
 	}
 }
+
+//client reads from MQ, exits if END is read.
 void *client(void *arg){
-	//sleep(1);
-	printf("%d\n", MQconnect(&client_mq, MQ_NAME));
-	printf("MQconnect: %s\n", strerror(errno));
+	if (MQconnect(&client_mq, MQ_NAME) == 0) {
+		printf("MQconnect: %s\n", strerror(errno));
+	}
+
 	char rBuffer[1024+10];
 	while(1){
-		//sleep(1);
-		if(MQread(client_mq,(char*)rBuffer) != -1) {
-			printf("Client: %s\n", rBuffer);
-			printf("MQ read attempt from client:  %s\n", strerror(errno));
-			if(strcmp(rBuffer, "END\n") == 0){
-				printf("Exiting client thread.\n");
-				pthread_exit(&cthread);
-			}
+		if(MQread(client_mq,(char*)rBuffer) == -1) {
+			printf("MQread:  %s\n", strerror(errno));
 		}
-		else printf("MQ read attempt from client:  %s\n", strerror(errno));
-
-
+		else {
+			printf("Client: %s\n", rBuffer);
+			if(strcmp(rBuffer, "END\n") == 0){
+							pthread_exit(&cthread);
+						}
+		}
 	}
 }
 
 int main() {
-	//printf("%d\n", MQcreate(&our_mq, MQ_NAME));
-	//printf("MQcreate: %s\n", strerror(errno));
+	//create threads
 	pthread_create(&sthread, NULL,server, NULL);
 	pthread_create(&cthread, NULL,client, NULL);
 
+	//finish
 	pthread_join(sthread, NULL);
 	printf("Server exited.\n");
 	pthread_join(cthread, NULL);
