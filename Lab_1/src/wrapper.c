@@ -45,11 +45,9 @@ int MQwrite (mqd_t mq, void * sendBuffer)
     /* Write a msg to a mailslot, return nr Uses mq as reference pointer, so that you can 	     reach the handle from anywhere*/
     /* should return number of bytes read         */
 	int status;
-	printf("MQwrite: %d\n",sendBuffer);
-	printf("size of received struct: %d\n", sizeof(sendBuffer));
-
-	status = mq_send(mq, sendBuffer, sizeof(sendBuffer), NULL);
-
+	struct pt *p_pt = sendBuffer;
+	printf("size of received struct: %d\n", sizeof(*p_pt));
+	status = mq_send(mq, p_pt, sizeof(*p_pt), NULL);
 	//TODO return no of bytes read?
 	if(status != -1) return 1;
 	else return 0;

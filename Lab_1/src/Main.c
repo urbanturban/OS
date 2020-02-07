@@ -23,23 +23,19 @@ void *server(void *arg){
 	my_pt.sy = 2;
 	my_pt.vx = 3;
 	my_pt.vy = 4;
-	my_pt.mass = 345678965;
+	my_pt.mass = 1337;
 	my_pt.next = NULL;
 	my_pt.life = 100;
 	my_pt.pid[30];
 
-	//char msg[20];
-
 	printf("Type message to send to MQ, type END to exit\n");
 	while(1){
 		fgets(my_pt.name, 20, stdin);
-		//printf("Server: %s", my_pt.name);
-		printf("my_pt size: %d\n", sizeof(my_pt));
 		if (MQwrite(our_mq, &my_pt) == 0) {
 			printf("MQwrite:  %s\n", strerror(errno));
 		}
 		if(strcmp(my_pt.name,"END\n") == 0){ //fgets includes newline from input
-			if (MQclose(&our_mq, MQ_NAME) == 0) { //mq_close wont use name...redudant
+			if (MQclose(&our_mq, MQ_NAME) == 0) {
 				printf("MQclose:  %s\n", strerror(errno));
 			}
 			pthread_exit(&sthread);
@@ -52,21 +48,25 @@ void *client(void *arg){
 	if (MQconnect(&client_mq, MQ_NAME) == 0) {
 		printf("MQconnect: %s\n", strerror(errno));
 	}
-
-	//char rBuffer[1024+10];
-	struct pt c_pt;
-	struct pt *pekare_cpt = &c_pt;
-	printf("c_pt.name before: %s\n", c_pt.name);
+	struct pt *cpt;
 	while(1){
-		if(MQread(client_mq, &c_pt) == -1) {
+		if(MQread(client_mq, cpt) == -1) {
 			printf("MQread:  %s\n", strerror(errno));
 		}
 		else {
-			printf("MQread:  %s\n", strerror(errno));
-			printf("c_pt.name: %s\n", c_pt.name);
-			printf("sx = %f\n", c_pt.sx);
-			printf("mass = %f\n", c_pt.mass);
-			if(strcmp(c_pt.name, "END\n") == 0){
+			printf("c_pt.name: %s\n", cpt->name);
+			printf("sx = %f\n", cpt->sx);
+			printf("sy = %f\n", cpt->sy);
+			printf("vx = %f\n", cpt->vx);
+			printf("vy = %f\n", cpt->vy);
+			printf("mass = %f\n", cpt->mass);
+			printf("life = %d\n", cpt->life);
+			if(strcmp(cpt->name, "END\n") == 0)
+			{
+				if (MQclose(&client_mq, MQ_NAME) == 0) {
+					printf("Client MQclose:  %s\n", strerror(errno));
+				}
+
 				pthread_exit(&cthread);
 			}
 		}
