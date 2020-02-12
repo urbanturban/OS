@@ -7,7 +7,7 @@ typedef int buffer_item;
 #include <pthread.h>
 #include <semaphore.h>
 
-#define DINING 0
+#define DINING 1
 
 
 //----------------------------------------PRODUCER CONSUMER SEGMENT----------------------------------------------
@@ -95,14 +95,22 @@ void *consumer(void *param) {
 
 /* Add an item to the buffer */
 int insert_item(buffer_item item) {
+	sem_wait(&empty);
+	pthread_mutex_lock(&mutex);
+
     /* When the buffer is not full add the item
      and increment the counter*/
+
     if(counter < BUFFER_SIZE) {
         buffer[counter] = item;
         counter++;
+     pthread_mutex_unlock(&mutex);
+     sem_post(&full);
+
         return 0;
     }
     else { /* Error the buffer is full */
+    pthread_mutex_unlock(&mutex);
         return -1;
     }
 }
@@ -111,22 +119,60 @@ int insert_item(buffer_item item) {
 int remove_item(buffer_item *item) {
     /* When the buffer is not empty remove the item
      and decrement the counter */
+	sem_wait(&full);
+	pthread_mutex_lock(&mutex);
     if(counter > 0) {
         *item = buffer[(counter-1)];
         counter--;
+    pthread_mutex_unlock(&mutex);
+    sem_post(&empty);
         return 0;
     }
     else { /* Error buffer empty */
+    pthread_mutex_unlock(&mutex);
         return -1;
     }
 }
 //----------------------------------------PRODUCER CONSUMER SEGMENT----------------------------------------------
 
 //----------------------------------------DINING PHILOSOPHERS SEGMENT--------------------------------------------
-void dining_philosophers()
-{
+void pickup(){
 
 }
+void putdown(){
+
+}
+void eat(){
+	usleep(10000);
+}
+void think(){
+	usleep(100);
+}
+
+void *philosopher_function(void * arg){
+	while(1){
+		int id = arg; //indexed from 0
+		sleep();
+		pickup();
+		printf("Philosoper %d har picked up forks\n",id );
+		eat();
+		printf("Philosoper %d has eaten\n",id );
+		putdown();
+		printf("Philosoper %d puts down forks\n",id );
+	}
+}
+void dining_philosophers()
+{
+	pthread_t philosophers[5];
+	for(int i = 0; i < 5; i++) {
+		pthread_create(&philosophers[i], NULL,&philosopher_function,i);
+	}
+
+	for(int i = 0; i< 5; i++) {
+		pthread_join(philosophers[i], NULL);
+	}
+}
+
 //----------------------------------------DINING PHILOSOPHERS SEGMENT--------------------------------------------
 int main(int argc, char *argv[]) {
 
@@ -144,6 +190,7 @@ int main(int argc, char *argv[]) {
     if (DINING == 1)
     {
     	//start dining philosophers
+    	dining_philosophers();
     }
     else //Start producer consumer
     {
