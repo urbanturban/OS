@@ -176,7 +176,7 @@ void *philosopher_function(void * arg){
 void dining_philosophers()
 {
 
-
+	pthread_mutex_init(&fork_mutex, NULL);
 	pthread_t philosophers[5];
 	for(int i = 0; i < 5; i++) {
 		pthread_create(&philosophers[i], NULL,&philosopher_function,i);
