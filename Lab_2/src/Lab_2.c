@@ -136,33 +136,47 @@ int remove_item(buffer_item *item) {
 //----------------------------------------PRODUCER CONSUMER SEGMENT----------------------------------------------
 
 //----------------------------------------DINING PHILOSOPHERS SEGMENT--------------------------------------------
-void pickup(){
+// This solution protects the critical section with a mutex and prevents a deadlock.
+// However, it performance issues: it only allows one philosopher to eat at a time.
+#define IN_USE 1
+#define NOT_IN_USE 0
+int FORK[5] = {NOT_IN_USE,NOT_IN_USE,NOT_IN_USE,NOT_IN_USE,NOT_IN_USE}; //all forks available at start.
+pthread_mutex_t fork_mutex;
 
-}
-void putdown(){
-
-}
 void eat(){
-	usleep(10000);
 }
 void think(){
-	usleep(100);
+	usleep(10000);
+}
+
+void putdown(int fork1_id, int fork2_id){
+	FORK[fork1_id] = NOT_IN_USE;
+	FORK[fork2_id] = NOT_IN_USE;
+}
+
+void pickup(int fork1_id, int fork2_id){
+		FORK[fork1_id] = IN_USE;
+		FORK[fork2_id] = IN_USE;
 }
 
 void *philosopher_function(void * arg){
+	int id = arg; //indexed from 0
 	while(1){
-		int id = arg; //indexed from 0
-		sleep();
-		pickup();
+		think();
+		pthread_mutex_lock(&fork_mutex);
+		pickup(FORK[id], FORK[(id+1)%5]);
 		printf("Philosoper %d har picked up forks\n",id );
 		eat();
 		printf("Philosoper %d has eaten\n",id );
-		putdown();
+		putdown(FORK[id], FORK[(id+1)%5]);
+		pthread_mutex_unlock(&fork_mutex);
 		printf("Philosoper %d puts down forks\n",id );
 	}
 }
 void dining_philosophers()
 {
+
+
 	pthread_t philosophers[5];
 	for(int i = 0; i < 5; i++) {
 		pthread_create(&philosophers[i], NULL,&philosopher_function,i);
