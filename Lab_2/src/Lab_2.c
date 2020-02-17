@@ -7,7 +7,7 @@ typedef int buffer_item;
 #include <pthread.h>
 #include <semaphore.h>
 
-#define DINING 1
+#define DINING 0 //1 for running the Dining Philosopher problem and 0 to run the Producer Consumer problem.
 
 
 //----------------------------------------PRODUCER CONSUMER SEGMENT----------------------------------------------
@@ -149,14 +149,14 @@ void think(){
 	usleep(10000);
 }
 
-void putdown(int fork1_id, int fork2_id){
-	FORK[fork1_id] = NOT_IN_USE;
-	FORK[fork2_id] = NOT_IN_USE;
+void putdown(int fork1, int fork2){
+	FORK[fork1] = NOT_IN_USE;
+	FORK[fork2] = NOT_IN_USE;
 }
 
-void pickup(int fork1_id, int fork2_id){
-		FORK[fork1_id] = IN_USE;
-		FORK[fork2_id] = IN_USE;
+void pickup(int fork1, int fork2){
+		FORK[fork1] = IN_USE;
+		FORK[fork2] = IN_USE;
 }
 
 void *philosopher_function(void * arg){
@@ -165,7 +165,7 @@ void *philosopher_function(void * arg){
 		think();
 		pthread_mutex_lock(&fork_mutex);
 		pickup(FORK[id], FORK[(id+1)%5]);
-		printf("Philosoper %d har picked up forks\n",id );
+		printf("Philosoper %d has picked up forks\n",id );
 		eat();
 		printf("Philosoper %d has eaten\n",id );
 		putdown(FORK[id], FORK[(id+1)%5]);
@@ -175,13 +175,11 @@ void *philosopher_function(void * arg){
 }
 void dining_philosophers()
 {
-
 	pthread_mutex_init(&fork_mutex, NULL);
 	pthread_t philosophers[5];
 	for(int i = 0; i < 5; i++) {
 		pthread_create(&philosophers[i], NULL,&philosopher_function,i);
 	}
-
 	for(int i = 0; i< 5; i++) {
 		pthread_join(philosophers[i], NULL);
 	}
@@ -198,8 +196,8 @@ int main(int argc, char *argv[]) {
     //}
 
     int mainSleepTime = 30;//atoi(argv[1]); /* Time in seconds for main to sleep */
-    int numProd = 10; //atoi(argv[2]); /* Number of producer threads */
-    int numCons = 3; //atoi(argv[3]); /* Number of consumer threads */
+    int numProd = 1; //atoi(argv[2]); /* Number of producer threads */
+    int numCons = 10; //atoi(argv[3]); /* Number of consumer threads */
 
     if (DINING == 1)
     {
