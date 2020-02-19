@@ -100,6 +100,17 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
     p1->sy = p1->sy + (p1->vy * DT);
     p1->life -= 1;
 }
+
+void * MQ_listener(void * args){
+	mqd_t serverMQ;
+	MQcreate();
+
+	while(1){
+		if(MQread() == 1){
+
+		}
+	}
+}
 int main(int argc, char *argv[]) //Main function
 {
     //----------------------------------------Variable declarations should be placed below---------------------------------

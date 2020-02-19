@@ -1,11 +1,10 @@
 /*
  ============================================================================
- Name        :	Lab_3_client.c
- Author      :	Akash Menon
+ Name        : Lab_3_client.c
+ Author      : Jakob Danielsson
  Version     :
- Copyright   : 	Your copyright notice
- Description : 	Client that creates planets from user input, and communicates
- 	 	 	 	to a server through POSIX message queues.
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
  ============================================================================
  */
 
@@ -14,43 +13,70 @@
 #include <pthread.h>
 #include "wrapper.h"
 
-planet_type *my_planet;
-pid_t pid;
+#define SERVER_MQ "/superQueue"
 
-int main(void){
-	createPlanet();
-	printPlanet();
-}
-void createPlanet() { /* Creates planet based on user input */
-	my_planet = malloc(sizeof(planet_type));
-		if(my_planet == NULL){
-			printf("could not allocate memory for planet\n");
+int main(void)
+{
+	//printf("Hello lab 3!\n");
+
+	char toServerMQName[] = SERVER_MQ;
+
+	planet_type planet;
+	pid_t pid = getpid();
+	sprintf(planet.pid, "%d", (int)pid);
+	mqd_t mqFromServer = NULL;
+
+	//char mqFromSeName* = (char*)malloc(sizeof(pid));
+	//char mqFromSeName[] = "/";
+
+
+	mqd_t mqToServer;
+	if(MQconnect(&mqToServer, toServerMQName) != 1){
+		printf("ERROR! COULD NOT CONNECT TO SERVER_MQ");
+		//return-1;
+	}
+
+	int menu = 0;
+
+	while(menu != -1){
+		printf("New planet? 1(yes) or -1(ENDs program)\n");
+		scanf("%d", &menu);
+
+		if(menu == 1){
+
+			printf("Planet name: ");
+			scanf("%s", planet.name);
+			printf("%s mass: ", planet.name);
+			scanf("%lf", &planet.mass);
+			printf("%s X-axis position: ", planet.name);
+			scanf("%lf", &planet.sx);
+			printf("%s Y-axis position: ", planet.name);
+			scanf("%lf", &planet.sy);
+			printf("%s X-axis velocity: ", planet.name);
+			scanf("%lf", &planet.vx);
+			printf("%s Y-axis velocity: ", planet.name);
+			scanf("%lf", &planet.vy);
+			printf("%s life: ", planet.name);
+			scanf("%d", &planet.life);
+
+			printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
+
+			if(mqFromServer == NULL){
+				usleep(10);
+				//MQcreate(&mqFromServer, mqFromSeName);
+			}
+
+			MQwrite(mqToServer, &planet);
+
 		}
-	// User inputs the details of the planet
-	printf("Planet NAME:\n");
-	scanf("%s", &my_planet->name);
-	printf("X-axis position:\n");
-	scanf("%lf", &my_planet->sx);
-	printf("Y-axis position:\n");
-	scanf("%lf", &my_planet->sy);
-	printf("X-axis velocity:\n");
-	scanf("%lf", &my_planet->vx);
-	printf("Y-axis velocity:\n");
-	scanf("%lf", &my_planet->vy);
-	printf("MASS:\n");
-	scanf("%lf", &my_planet->mass);
-	printf("LIFE:\n");
-	scanf("%d", &my_planet->life);
+		else {}
+	}
 
-	pid = getpid();
-}
-void printPlanet(){ /* Prints the user-defined details of the planet */
-	printf("Name: %s\n", my_planet->name);
-	printf("X: %.f\n", my_planet->sx);
-	printf("Y: %.f\n", my_planet->sy);
-	printf("Vx: %f\n", my_planet->vx);
-	printf("Vy: %f\n", my_planet->vy);
-	printf("Mass: %.f\n", my_planet->mass);
-	printf("Life: %d\n", my_planet->life);
-	printf("pid: %d\n", pid);
+
+	MQclose(&mqToServer, toServerMQName);
+	//MQclose(&mqFromServer);
+	mq_unlink(mqFromServer);
+
+	printf("END");
+	return EXIT_SUCCESS;
 }
