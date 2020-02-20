@@ -1,10 +1,11 @@
 /*
  ============================================================================
- Name        : Lab_3_client.c
- Author      : Jakob Danielsson
+ Name        : 	Lab_3_client.c
+ Author      : 	Edvin Asmussen, Akash Menon
  Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Copyright   : 	Your copyright notice
+ Description : 	Client, that makes planets based on user input,
+ 	 	 	 	sends them over POSIX MQ to server.
  ============================================================================
  */
 
@@ -44,7 +45,7 @@ int main(void)
 
 		if(menu == 1){
 
-			printf("Planet name: ");
+			printf("Planet name:\n");
 			scanf("%s", planet.name);
 			printf("%s mass: ", planet.name);
 			scanf("%lf", &planet.mass);

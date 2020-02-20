@@ -12,13 +12,31 @@ int x2 = 0;
 GtkWidget *window;
 GtkWidget *darea;
 
-planet_type * planet_list = NULL;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+planet_type * planet_list = NULL; //head
 void calculate_planet_pos(planet_type *p1);
 
-void * planet_thread (void*args)
+void * planet_thread (void*args) //calculates own position every 10ms
 {
 	planet_type * this_planet = (planet_type *)args;
-	calculate_planet_pos(this_planet);
+	pthread_mutex_lock(&mutex);
+	if(planet_list->next == NULL){ //if its the first planet added
+		planet_list->next = this_planet;
+	}
+	else{
+		planet_type * temp = planet_list->next;
+		while(temp->next != NULL){
+			temp = temp->next;
+		}
+		temp->next = this_planet;
+		this_planet->next = NULL;
+	}
+	pthread_mutex_unlock(&mutex);
+	while(1){
+	//while(this_planet->life > 0){ //until end of life of planet
+		usleep(10000);
+		calculate_planet_pos(this_planet);
+	}
 }
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for cairo, will be triggered each time a draw event is executed
                               gpointer user_data)
@@ -29,7 +47,7 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for c
 
 static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface area cr
 {
-
+	/*
     cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
     x++; //dummy calculation
     y++;
@@ -37,7 +55,7 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
     cairo_select_font_face(cr, "Purisa",
           CAIRO_FONT_SLANT_NORMAL,
           CAIRO_FONT_WEIGHT_BOLD);
-    cairo_move_to(cr, 20, 30);
+    cairo_move_to(cr, 10, 10);
     cairo_show_text(cr, "You probably do not want to debug using text output, but you can");
     cairo_arc(cr, x,y,50,0,2*3.1415); //Create cairo shape: Parameters: Surface area, x pos, y pos, radius, Angle 1, Angle 2
     cairo_fill(cr);
@@ -47,9 +65,27 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
     // --------- for all planets in list:
     // --------- cairo_arc(cr, planet.xpos, planet.ypos, 10, 0, 2*3.1415)
     // --------- cairo_fill(cr)
+
+     */
     //------------------------------------------Insert planet drawings below-------------------------------------------
+	cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
+    cairo_select_font_face(cr, "Purisa",
+          CAIRO_FONT_SLANT_NORMAL,
+          CAIRO_FONT_WEIGHT_BOLD);
 
-
+    	planet_type *planet_to_draw = (planet_type*)malloc(sizeof(planet_type));
+    pthread_mutex_lock(&mutex);
+    if(planet_list->next != NULL){
+    	planet_to_draw = planet_list->next;
+    	while(planet_to_draw != NULL){
+    	x = planet_to_draw->sx;
+    	y = planet_to_draw->sy;
+    	cairo_arc(cr, x,y,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
+        cairo_fill(cr);
+     	planet_to_draw = planet_to_draw->next;
+    	}
+    pthread_mutex_unlock(&mutex);
+    }
 
 
     //------------------------------------------Insert planet drawings Above-------------------------------------------
@@ -65,6 +101,7 @@ GtkTickCallback on_frame_tick(GtkWidget * widget, GdkFrameClock * frame_clock, g
 void calculate_planet_pos(planet_type *p1)  //Function for calculating the position of a planet, relative to all other planets in the system
 {
     planet_type *current = planet_list; //Poiinter to head in the linked list
+
     //Variable declarations
     double Atotx = 0;
     double Atoty = 0;
@@ -101,7 +138,7 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
     p1->life -= 1;
 }
 
-void * MQ_listener(void * args){
+/*void * MQ_listener(void * args){
 	mqd_t serverMQ;
 	MQcreate();
 
@@ -111,10 +148,39 @@ void * MQ_listener(void * args){
 		}
 	}
 }
+*/
 int main(int argc, char *argv[]) //Main function
 {
+	planet_type testPlanet = {0};
+	strcpy(testPlanet.name,"Earth");	// Name of planet
+	testPlanet.sx = 200;			// X-axis position
+	testPlanet.sy = 300;			// Y-axis position
+	testPlanet.vx = 3;			// X-axis velocity
+	testPlanet.vy = 4;			// Y-axis velocity
+	testPlanet.mass = 1000;		// Planet mass
+	testPlanet.next = NULL;		// Pointer to next planet in linked list
+	testPlanet.life = pow(10,8);		// Planet life
+	testPlanet.pid[30];	// String containing ID of creating process
+
+	planet_type testPlanet2 = {0};
+	strcpy(testPlanet2.name,"Sun");	// Name of planet
+	testPlanet2.sx = 300;			// X-axis position
+	testPlanet2.sy = 300;			// Y-axis position
+	testPlanet2.vx = 0;			// X-axis velocity
+	testPlanet2.vy = 0;			// Y-axis velocity
+	testPlanet2.mass = pow(10,8);		// Planet mass
+	testPlanet2.next = NULL;		// Pointer to next planet in linked list
+	testPlanet2.life = pow(10,8);		// Planet life
+	testPlanet2.pid[30];	// String containing ID of creating process
+
+
+
+
+
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
+	pthread_t i_am_thread2;
+	planet_list = (planet_type*)malloc(sizeof(planet_type));
 
     //----------------------------------------Variable declarations should be placed Above---------------------------------
 
@@ -138,6 +204,10 @@ int main(int argc, char *argv[]) //Main function
 
     //-------------------------------Insert code for pthreads below------------------------------------------------
     //Create MQ_listener thread
+    pthread_create(&i_am_thread, NULL,&planet_thread,&testPlanet);
+    pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
+
+
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
 
