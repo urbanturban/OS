@@ -149,13 +149,9 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
     p1->life -= 1;
 }
 
-<<<<<<< HEAD
-
 void * MQ_listener(void * args){
 	pthread_t pt;
-=======
 /*void * MQ_listener(void * args){
->>>>>>> 76ed8a31d2db177118bba53aa468c25a5faaee66
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
 	MQcreate(&serverMQ, MQserverName);
@@ -235,14 +231,11 @@ int main(int argc, char *argv[]) //Main function
 
 
     //-------------------------------Insert code for pthreads below------------------------------------------------
-<<<<<<< HEAD
     pthread_create(&i_am_thread, NULL, &MQ_listener, NULL);//Create MQ_listener thread
-=======
     //Create MQ_listener thread
     pthread_create(&i_am_thread, NULL,&planet_thread,&testPlanet);
     pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
 
->>>>>>> 76ed8a31d2db177118bba53aa468c25a5faaee66
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
 
