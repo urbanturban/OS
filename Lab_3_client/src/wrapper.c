@@ -34,7 +34,7 @@ void * MQread(mqd_t mq, void ** buffer) {
 
 	bytes = mq_receive(mq, (char*) *buffer, attr.mq_msgsize, NULL);	//
 	if (bytes == -1) {
-		printf("error read. %s\n", strerror(errno));
+		//printf("error read. %s\n", strerror(errno));
 		return 0;
 	}
 	/* Read a msg from a mailslot, return nr Uses mq as reference pointer, so that you can 		reach the handle from anywhere */
