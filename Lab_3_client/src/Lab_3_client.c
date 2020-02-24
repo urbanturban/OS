@@ -27,7 +27,7 @@ int main(void)
 	sprintf(planet.pid, "%d", (int)pid);
 	mqd_t mqFromServer = NULL;
 
-	//char mqFromSeName* = (char*)malloc(sizeof(pid));
+	//char mqFromSeName* = (char*)malloc(sizeof(char)*);
 	//char mqFromSeName[] = "/";
 
 
@@ -63,12 +63,10 @@ int main(void)
 			printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
 
 			if(mqFromServer == NULL){
-				usleep(10);
+				//usleep(10);
 				//MQcreate(&mqFromServer, mqFromSeName);
 			}
-
 			MQwrite(mqToServer, &planet);
-
 		}
 		else {}
 	}
@@ -76,7 +74,7 @@ int main(void)
 
 	MQclose(&mqToServer, toServerMQName);
 	//MQclose(&mqFromServer);
-	mq_unlink(mqFromServer);
+	//mq_unlink(mqFromServer);
 
 	printf("END");
 	return EXIT_SUCCESS;

@@ -4,6 +4,8 @@
 #include <semaphore.h>
 #include "wrapper.h"
 
+#define SERVER_MQ "/superQueue"
+
 #define DT 10
 static void do_drawing(cairo_t *);
 int x = 0;
@@ -18,24 +20,24 @@ void calculate_planet_pos(planet_type *p1);
 
 void * planet_thread (void*args) //calculates own position every 10ms
 {
-	planet_type * this_planet = (planet_type *)args;
+	planet_type this_planet = *((planet_type *)args);
 	pthread_mutex_lock(&mutex);
 	if(planet_list->next == NULL){ //if its the first planet added
-		planet_list->next = this_planet;
+		planet_list->next = &this_planet;
 	}
 	else{
 		planet_type * temp = planet_list->next;
 		while(temp->next != NULL){
 			temp = temp->next;
 		}
-		temp->next = this_planet;
-		this_planet->next = NULL;
+		temp->next = &this_planet;
+		this_planet.next = NULL;
 	}
 	pthread_mutex_unlock(&mutex);
-	while(this_planet->life > 0){ //until end of life of planet
+	while(this_planet.life > 0){ //until end of life of planet
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
-		calculate_planet_pos(this_planet);
+		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
 	pthread_exit(NULL);
@@ -147,17 +149,32 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
     p1->life -= 1;
 }
 
-/*void * MQ_listener(void * args){
+void * MQ_listener(void * args){
+	pthread_t pt;
 	mqd_t serverMQ;
-	MQcreate();
+	char MQserverName[] = SERVER_MQ;
+	MQcreate(&serverMQ, MQserverName);
+
+	int i = 1;
+	planet_type *nextPlanet = (planet_type *)malloc(sizeof(planet_type));
+	planet_list = nextPlanet;
 
 	while(1){
-		if(MQread() == 1){
-
+		if(nextPlanet == NULL){//om nästa plats för en planet i planetlistan är tom så görs en ny planet
+			nextPlanet = (planet_type *)realloc(nextPlanet, sizeof(planet_type));
+			nextPlanet->next = NULL;
+		}
+		if(MQread(serverMQ, &nextPlanet) != 0){
+			//pthread_create(&pt, NULL, &planet_thread, planet+i);//skapar en tråd för den nya planeten som kommit in
+			nextPlanet = nextPlanet->next;//byt till nästa plats i listan
 		}
 	}
+	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
+	MQclose(&serverMQ, MQserverName);
+	mq_unlink(MQserverName);
+
 }
-*/
+
 int main(int argc, char *argv[]) //Main function
 {
 	//placeholders until message queue parsing from client is complete
@@ -190,6 +207,7 @@ int main(int argc, char *argv[]) //Main function
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
 	pthread_t i_am_thread2;
+	pthread_t i_am_thread3;
 	planet_list = (planet_type*)malloc(sizeof(planet_type));
 
     //----------------------------------------Variable declarations should be placed Above---------------------------------
@@ -213,9 +231,10 @@ int main(int argc, char *argv[]) //Main function
 
 
     //-------------------------------Insert code for pthreads below------------------------------------------------
+    pthread_create(&i_am_thread, NULL, &MQ_listener, NULL);//Create MQ_listener thread
     //Create MQ_listener thread
-    pthread_create(&i_am_thread, NULL,&planet_thread,&testPlanet);
-    pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
+    //pthread_create(&i_am_thread3, NULL,&planet_thread,&testPlanet);
+    //pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
 
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
