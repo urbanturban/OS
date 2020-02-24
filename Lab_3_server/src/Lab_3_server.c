@@ -86,13 +86,18 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 			if(strcmp(planet_to_draw->name, "Sun") == 0){
 				cairo_set_source_rgb(cr, 1, 0, 0); //Set RGB source of cairo, 0,0,0 = black
 			}
-			else {
+			else if(strcmp(planet_to_draw->name, "Earth") == 0) {
 				cairo_show_text(cr, "PRINTING EARTH");
 				cairo_set_source_rgb(cr, 0, 0, 1);
+			}
+
+			else {
+				cairo_set_source_rgb(cr, 0, 0, 0);
 			}
 			cairo_arc(cr, planet_to_draw->sx,planet_to_draw->sy,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
 			cairo_move_to(cr, planet_to_draw->sx,planet_to_draw->sy);
 			cairo_fill(cr);
+		    cairo_show_text(cr, "You probably do not want to debug using text output, but you can");
 			planet_to_draw = planet_to_draw->next;
     	}
     //pthread_mutex_unlock(&mutex);
@@ -163,13 +168,12 @@ void * MQ_listener(void * args){
 	if(status != 0){
 		while(1){
 			if(MQread(serverMQ, &planetPtr) != 0){
-				pthread_create(&array[i-1],NULL, &planet_thread, &planet);
-				i++;
-				/*
+				//pthread_create(&array[i-1],NULL, &planet_thread, &planet);
+				//i++;
+
 				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
 				i++;
 				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
-				*/
 				usleep(10);
 			}
 		}

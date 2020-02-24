@@ -59,8 +59,32 @@ int main(void)
 		testPlanet2.life = pow(10,8);		// Planet life
 		testPlanet2.pid[30];
 
+		planet_type planet3 = {0};
+		strcpy(planet3.name,"comet");	// Name of planet
+		planet3.sx = 500;			// X-axis position
+		planet3.sy = 300;			// Y-axis position
+		planet3.vx = 0.1;			// X-axis velocity
+		planet3.vy = 0;			// Y-axis velocity
+		planet3.mass = pow(10,3);		// Planet mass
+		planet3.next = NULL;		// Pointer to next planet in linked list
+		planet3.life = pow(10,8);		// Planet life
+		planet3.pid[30];
+
+		planet_type dyingstar = {0};
+		strcpy(dyingstar.name,"Dying star");	// Name of planet
+		dyingstar.sx = 500;			// X-axis position
+		dyingstar.sy = 400;			// Y-axis position
+		dyingstar.vx = 0;			// X-axis velocity
+		dyingstar.vy = 0;			// Y-axis velocity
+		dyingstar.mass = pow(10,9);		// Planet mass
+		dyingstar.next = NULL;		// Pointer to next planet in linked list
+		dyingstar.life = pow(10,2);		// Planet life
+		dyingstar.pid[30];
+
 		MQwrite(mqToServer, &testPlanet);
 		MQwrite(mqToServer, &testPlanet2);
+		MQwrite(mqToServer, &planet3);
+		MQwrite(mqToServer, &dyingstar);
 	}
 	else{
 		int menu = 0;
