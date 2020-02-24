@@ -151,7 +151,6 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
 
 void * MQ_listener(void * args){
 	pthread_t pt;
-/*void * MQ_listener(void * args){
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
 	MQcreate(&serverMQ, MQserverName);
@@ -175,7 +174,7 @@ void * MQ_listener(void * args){
 	mq_unlink(MQserverName);
 
 }
-*/
+
 int main(int argc, char *argv[]) //Main function
 {
 	//placeholders until message queue parsing from client is complete
