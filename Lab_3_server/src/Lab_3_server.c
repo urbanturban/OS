@@ -150,26 +150,26 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
 }
 
 void * MQ_listener(void * args){
-	pthread_t pt;
+	pthread_t *pt = (pthread_t*)malloc(sizeof(pthread_t));
+	int i = 1;
+
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
 	MQcreate(&serverMQ, MQserverName);
 
-	int i = 1;
-	planet_type *nextPlanet = (planet_type *)malloc(sizeof(planet_type));
-	planet_list = nextPlanet;
+	planet_type planet;
+	planet_type *planetPtr;
 
 	while(1){
-		if(nextPlanet == NULL){//om nästa plats för en planet i planetlistan är tom så görs en ny planet
-			nextPlanet = (planet_type *)realloc(nextPlanet, sizeof(planet_type));
-			nextPlanet->next = NULL;
-		}
-		if(MQread(serverMQ, &nextPlanet) != 0){
-			//pthread_create(&pt, NULL, &planet_thread, planet+i);//skapar en tråd för den nya planeten som kommit in
-			nextPlanet = nextPlanet->next;//byt till nästa plats i listan
+		if(MQread(serverMQ, &planetPtr) == 1){
+			pthread_create(pt+i-1, NULL, &planet_thread, &planet);
+			i++;
+			pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
+			usleep(10);
 		}
 	}
 	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
+	free(pt);
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
 
