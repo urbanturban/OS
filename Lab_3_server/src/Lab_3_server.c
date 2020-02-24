@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include "wrapper.h"
 
-#define SERVER_MQ "/superQueue"
+#define SERVER_MQ "/superQueue345"
 
 #define DT 10
 static void do_drawing(cairo_t *);
@@ -21,7 +21,7 @@ void calculate_planet_pos(planet_type *p1);
 void * planet_thread (void*args) //calculates own position every 10ms
 {
 	planet_type this_planet = *((planet_type *)args);
-	pthread_mutex_lock(&mutex);
+	//pthread_mutex_lock(&mutex);
 	if(planet_list->next == NULL){ //if its the first planet added
 		planet_list->next = &this_planet;
 	}
@@ -33,7 +33,7 @@ void * planet_thread (void*args) //calculates own position every 10ms
 		temp->next = &this_planet;
 		this_planet.next = NULL;
 	}
-	pthread_mutex_unlock(&mutex);
+	//pthread_mutex_unlock(&mutex);
 	while(this_planet.life > 0){ //until end of life of planet
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
@@ -79,7 +79,7 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
           CAIRO_FONT_WEIGHT_BOLD);
 
     planet_type *planet_to_draw = (planet_type*)malloc(sizeof(planet_type));
-    pthread_mutex_lock(&mutex);
+    //pthread_mutex_lock(&mutex);
     if(planet_list->next != NULL){
     	planet_to_draw = planet_list->next;
     	while(planet_to_draw != NULL){
@@ -95,7 +95,7 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 			cairo_fill(cr);
 			planet_to_draw = planet_to_draw->next;
     	}
-    pthread_mutex_unlock(&mutex);
+    //pthread_mutex_unlock(&mutex);
     }
 
 
@@ -155,25 +155,26 @@ void * MQ_listener(void * args){
 
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
-	int status = MQcreate(&serverMQ, MQserverName);
+	int status = MQcreate(&serverMQ,SERVER_MQ);
 
 	planet_type planet;
 	planet_type *planetPtr = &planet;
-
 	pthread_t array[10];
-
-	while(1){
-		if(MQread(serverMQ, &planetPtr) == 1){
-			pthread_create(&array[i-1],NULL, &planet_thread, &planet);
-			i++;
-			/*
-			pthread_create(pt+i-1, NULL, &planet_thread, &planet);
-			i++;
-			pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
-			*/
-			usleep(10);
+	if(status != 0){
+		while(1){
+			if(MQread(serverMQ, &planetPtr) != 0){
+				pthread_create(&array[i-1],NULL, &planet_thread, &planet);
+				i++;
+				/*
+				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
+				i++;
+				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
+				*/
+				usleep(10);
+			}
 		}
 	}
+
 	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
 	free(pt);
 	MQclose(&serverMQ, MQserverName);

@@ -14,7 +14,7 @@
 #include <pthread.h>
 #include "wrapper.h"
 
-#define SERVER_MQ "/superQueue"
+#define SERVER_MQ "/superQueue345"
 
 int main(void)
 {
@@ -29,7 +29,8 @@ int main(void)
 
 	char toServerMQName[] = SERVER_MQ;
 	mqd_t mqToServer;
-	if(MQconnect(&mqToServer, toServerMQName) != 1){
+	int status = MQconnect(&mqToServer, toServerMQName);
+	if(status != 1){
 		printf("ERROR! COULD NOT CONNECT TO SERVER_MQ");
 		//return-1;
 	}

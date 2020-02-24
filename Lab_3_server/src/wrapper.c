@@ -23,7 +23,7 @@ int MQcreate(mqd_t * mq, char * name) {
 	if (*mq != -1)
 		return 1;	//Should return 1 on success and 0 on fail
 	else {
-		printf("error create queue: %s", strerror(errno));
+		printf("error create queue: %s\n", strerror(errno));
 		return 0;
 	}
 }
