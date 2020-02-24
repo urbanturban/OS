@@ -20,24 +20,24 @@ void calculate_planet_pos(planet_type *p1);
 
 void * planet_thread (void*args) //calculates own position every 10ms
 {
-	planet_type * this_planet = (planet_type *)args;
+	planet_type this_planet = *((planet_type *)args);
 	pthread_mutex_lock(&mutex);
 	if(planet_list->next == NULL){ //if its the first planet added
-		planet_list->next = this_planet;
+		planet_list->next = &this_planet;
 	}
 	else{
 		planet_type * temp = planet_list->next;
 		while(temp->next != NULL){
 			temp = temp->next;
 		}
-		temp->next = this_planet;
-		this_planet->next = NULL;
+		temp->next = &this_planet;
+		this_planet.next = NULL;
 	}
 	pthread_mutex_unlock(&mutex);
-	while(this_planet->life > 0){ //until end of life of planet
+	while(this_planet.life > 0){ //until end of life of planet
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
-		calculate_planet_pos(this_planet);
+		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
 	pthread_exit(NULL);
@@ -207,6 +207,7 @@ int main(int argc, char *argv[]) //Main function
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
 	pthread_t i_am_thread2;
+	pthread_t i_am_thread3;
 	planet_list = (planet_type*)malloc(sizeof(planet_type));
 
     //----------------------------------------Variable declarations should be placed Above---------------------------------
@@ -232,8 +233,8 @@ int main(int argc, char *argv[]) //Main function
     //-------------------------------Insert code for pthreads below------------------------------------------------
     pthread_create(&i_am_thread, NULL, &MQ_listener, NULL);//Create MQ_listener thread
     //Create MQ_listener thread
-    pthread_create(&i_am_thread, NULL,&planet_thread,&testPlanet);
-    pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
+    //pthread_create(&i_am_thread3, NULL,&planet_thread,&testPlanet);
+    //pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
 
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
