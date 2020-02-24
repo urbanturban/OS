@@ -1,10 +1,11 @@
 /*
  ============================================================================
- Name        : Lab_3_client.c
- Author      : Jakob Danielsson
+ Name        : 	Lab_3_client.c
+ Author      : 	Edvin Asmussen, Akash Menon
  Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Copyright   : 	Your copyright notice
+ Description : 	Client, that makes planets based on user input,
+ 	 	 	 	sends them over POSIX MQ to server.
  ============================================================================
  */
 
@@ -26,7 +27,7 @@ int main(void)
 	sprintf(planet.pid, "%d", (int)pid);
 	mqd_t mqFromServer = NULL;
 
-	//char mqFromSeName* = (char*)malloc(sizeof(pid));
+	//char mqFromSeName* = (char*)malloc(sizeof(char)*);
 	//char mqFromSeName[] = "/";
 
 
@@ -44,7 +45,7 @@ int main(void)
 
 		if(menu == 1){
 
-			printf("Planet name: ");
+			printf("Planet name:\n");
 			scanf("%s", planet.name);
 			printf("%s mass: ", planet.name);
 			scanf("%lf", &planet.mass);
@@ -62,12 +63,10 @@ int main(void)
 			printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
 
 			if(mqFromServer == NULL){
-				usleep(10);
+				//usleep(10);
 				//MQcreate(&mqFromServer, mqFromSeName);
 			}
-
 			MQwrite(mqToServer, &planet);
-
 		}
 		else {}
 	}
@@ -75,7 +74,7 @@ int main(void)
 
 	MQclose(&mqToServer, toServerMQName);
 	//MQclose(&mqFromServer);
-	mq_unlink(mqFromServer);
+	//mq_unlink(mqFromServer);
 
 	printf("END");
 	return EXIT_SUCCESS;
