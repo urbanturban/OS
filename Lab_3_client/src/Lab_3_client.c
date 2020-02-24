@@ -18,57 +18,82 @@
 
 int main(void)
 {
-	//printf("Hello lab 3!\n");
-
-	char toServerMQName[] = SERVER_MQ;
+	int onlyTest = 0;
 
 	planet_type planet;
 	pid_t pid = getpid();
 	sprintf(planet.pid, "%d", (int)pid);
 	mqd_t mqFromServer = NULL;
-
 	//char mqFromSeName* = (char*)malloc(sizeof(char)*);
 	//char mqFromSeName[] = "/";
 
-
+	char toServerMQName[] = SERVER_MQ;
 	mqd_t mqToServer;
 	if(MQconnect(&mqToServer, toServerMQName) != 1){
 		printf("ERROR! COULD NOT CONNECT TO SERVER_MQ");
 		//return-1;
 	}
 
-	int menu = 0;
+	if(onlyTest == 0){
 
-	while(menu != -1){
-		printf("New planet? 1(yes) or -1(ENDs program)\n");
-		scanf("%d", &menu);
+		planet_type testPlanet = {0};
+		strcpy(testPlanet.name,"Earth");	// Name of planet
+		testPlanet.sx = 200;			// X-axis position
+		testPlanet.sy = 300;			// Y-axis position
+		testPlanet.vx = 0;			// X-axis velocity
+		testPlanet.vy = 0.008;			// Y-axis velocity
+		testPlanet.mass = 1000;		// Planet mass
+		testPlanet.next = NULL;		// Pointer to next planet in linked list
+		testPlanet.life = pow(10,8);		// Planet life
+		testPlanet.pid[30];	// String containing ID of creating process
 
-		if(menu == 1){
+		planet_type testPlanet2 = {0};
+		strcpy(testPlanet2.name,"Sun");	// Name of planet
+		testPlanet2.sx = 300;			// X-axis position
+		testPlanet2.sy = 300;			// Y-axis position
+		testPlanet2.vx = 0;			// X-axis velocity
+		testPlanet2.vy = 0;			// Y-axis velocity
+		testPlanet2.mass = pow(10,8);		// Planet mass
+		testPlanet2.next = NULL;		// Pointer to next planet in linked list
+		testPlanet2.life = pow(10,8);		// Planet life
+		testPlanet2.pid[30];
 
-			printf("Planet name:\n");
-			scanf("%s", planet.name);
-			printf("%s mass: ", planet.name);
-			scanf("%lf", &planet.mass);
-			printf("%s X-axis position: ", planet.name);
-			scanf("%lf", &planet.sx);
-			printf("%s Y-axis position: ", planet.name);
-			scanf("%lf", &planet.sy);
-			printf("%s X-axis velocity: ", planet.name);
-			scanf("%lf", &planet.vx);
-			printf("%s Y-axis velocity: ", planet.name);
-			scanf("%lf", &planet.vy);
-			printf("%s life: ", planet.name);
-			scanf("%d", &planet.life);
+		MQwrite(mqToServer, &testPlanet);
+		MQwrite(mqToServer, &testPlanet2);
+	}
+	else{
+		int menu = 0;
 
-			printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
+		while(menu != -1){
+			printf("New planet? 1(yes) or -1(ENDs program)\n");
+			scanf("%d", &menu);
 
-			if(mqFromServer == NULL){
+			if(menu == 1){
+
+				printf("Planet name:\n");
+				scanf("%s", planet.name);
+				printf("%s mass: ", planet.name);
+				scanf("%lf", &planet.mass);
+				printf("%s X-axis position: ", planet.name);
+				scanf("%lf", &planet.sx);
+				printf("%s Y-axis position: ", planet.name);
+				scanf("%lf", &planet.sy);
+				printf("%s X-axis velocity: ", planet.name);
+				scanf("%lf", &planet.vx);
+				printf("%s Y-axis velocity: ", planet.name);
+				scanf("%lf", &planet.vy);
+				printf("%s life: ", planet.name);
+				scanf("%d", &planet.life);
+
+				//printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
+
+				if(mqFromServer == NULL){
 				//usleep(10);
 				//MQcreate(&mqFromServer, mqFromSeName);
+				}
+				MQwrite(mqToServer, &planet);
 			}
-			MQwrite(mqToServer, &planet);
 		}
-		else {}
 	}
 
 

@@ -155,16 +155,22 @@ void * MQ_listener(void * args){
 
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
-	MQcreate(&serverMQ, MQserverName);
+	int status = MQcreate(&serverMQ, MQserverName);
 
 	planet_type planet;
-	planet_type *planetPtr;
+	planet_type *planetPtr = &planet;
+
+	pthread_t array[10];
 
 	while(1){
 		if(MQread(serverMQ, &planetPtr) == 1){
+			pthread_create(&array[i-1],NULL, &planet_thread, &planet);
+			i++;
+			/*
 			pthread_create(pt+i-1, NULL, &planet_thread, &planet);
 			i++;
 			pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
+			*/
 			usleep(10);
 		}
 	}
@@ -214,7 +220,7 @@ int main(int argc, char *argv[]) //Main function
 
     //GUI stuff, don't touch unless you know what you are doing, or if you talked to me
     gtk_init(&argc, &argv); //Initialize GTK environment
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //Create a new window which will serve as your top layer
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //Create a new MQ_listenerwindow which will serve as your top layer
     darea = gtk_drawing_area_new(); //Create draw area, which will be used under top layer window
     gtk_container_add(GTK_CONTAINER(window), darea); //add draw area to top layer window
     g_signal_connect(G_OBJECT(darea), "draw",
