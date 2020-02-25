@@ -90,7 +90,12 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 				cairo_show_text(cr, "PRINTING EARTH");
 				cairo_set_source_rgb(cr, 0, 0, 1);
 			}
-
+			else if(strcmp(planet_to_draw->name, "Comet") == 0) {
+				cairo_set_source_rgb(cr, 0, 1, 0);
+			}
+			else if(strcmp(planet_to_draw->name, "Dying star") == 0) {
+				cairo_set_source_rgb(cr, 0.5, 0.2, 0.1);
+			}
 			else {
 				cairo_set_source_rgb(cr, 0, 0, 0);
 			}
@@ -170,7 +175,6 @@ void * MQ_listener(void * args){
 			if(MQread(serverMQ, &planetPtr) != 0){
 				//pthread_create(&array[i-1],NULL, &planet_thread, &planet);
 				//i++;
-
 				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
 				i++;
 				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
@@ -179,12 +183,10 @@ void * MQ_listener(void * args){
 			else usleep(10);
 		}
 	}
-
 	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
 	free(pt);
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
-
 }
 
 int main(int argc, char *argv[]) //Main function
