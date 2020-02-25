@@ -11,7 +11,7 @@ int MQcreate(mqd_t * mq, char * name) {
 	attr.mq_msgsize = MAX_SIZE;
 
 
-	*mq = mq_open(name, O_CREAT | O_RDWR, 0777, &attr);	//Should create a new messagequeue, use mq as reference pointer so you can reach the handle from anywhere
+	*mq = mq_open(name, O_CREAT | O_RDWR | O_NONBLOCK, 0777, &attr);	//Should create a new messagequeue, use mq as reference pointer so you can reach the handle from anywhere
 	if (*mq != -1)
 		return 1;	//Should return 1 on success and 0 on fail
 	else {
@@ -23,8 +23,10 @@ int MQconnect(mqd_t * mq, char * name) {
 	*mq = mq_open(name, O_RDWR); /* Connects to an existing mailslot for writing Uses mq as reference pointer, so that you can 	reach the handle from anywhere*/
 	if (*mq != -1)
 		return 1;	//Should return 1 on success and 0 on fail
-	else
+	else{
+		printf("Error connect to queue: %s", strerror(errno));
 		return 0;/* Should return 1 on success and 0 on fail*/
+	}
 }
 
 void * MQread(mqd_t mq, void ** buffer) {

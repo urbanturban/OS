@@ -14,7 +14,7 @@
 #include <pthread.h>
 #include "wrapper.h"
 
-#define SERVER_MQ "/superQueue345"
+#define SERVER_MQ "/superQueue3451"
 
 int main(void)
 {
@@ -85,6 +85,14 @@ int main(void)
 		MQwrite(mqToServer, &testPlanet2);
 		MQwrite(mqToServer, &planet3);
 		MQwrite(mqToServer, &dyingstar);
+
+
+		sleep(20);
+
+		planet_type deathstar;
+		strcpy(deathstar.name, "deathstar");
+		MQwrite(mqToServer, &deathstar);
+
 	}
 	else{
 		int menu = 0;
