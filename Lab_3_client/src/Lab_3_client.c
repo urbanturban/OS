@@ -153,6 +153,7 @@ int main(void)
 				//printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
 
 				MQwrite(mqToServer, &planet);
+				numberOfPlanets++;
 			}
 		}
 	}
@@ -161,5 +162,6 @@ int main(void)
 	MQclose(&mqToServer, toServerMQName);
 
 	printf("END");
-	return EXIT_SUCCESS;
+	pthread_exit(NULL);
+	//return EXIT_SUCCESS;
 }

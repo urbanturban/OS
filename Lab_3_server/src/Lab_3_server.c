@@ -26,12 +26,27 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	pthread_mutex_lock(&mutex);
 	add_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
+
+	//mq Hantering
+	char mqToClientName[30]="\0";
+	strcpy(mqToClientName, this_planet.pid);
+	mqd_t mqToClient;
+	MQconnect(&mqToClient, mqToClientName);
+	//mq Hantering
+
 	while(this_planet.life > 0){ //until end of life of planet
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
 		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
+
+	//MQ hantering
+	MQwrite(mqToClient, &this_planet);
+	usleep(10);
+	MQclose(&mqToClient, mqToClientName);
+	//MQ hantering
+
 	pthread_mutex_lock(&mutex);
 	delete_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
