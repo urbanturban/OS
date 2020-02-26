@@ -17,22 +17,13 @@ GtkWidget *darea;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 planet_type * planet_list = NULL; //head
 void calculate_planet_pos(planet_type *p1);
+void add_Planet(planet_type *p);
 
 void * planet_thread (void*args) //calculates own position every 10ms
 {
 	planet_type this_planet = *((planet_type *)args);
 	pthread_mutex_lock(&mutex);
-	if(planet_list == NULL){ //if its the first planet added
-		planet_list = &this_planet;
-	}
-	else{
-		planet_type * temp = planet_list;
-		while(temp->next != NULL){
-			temp = temp->next;
-		}
-		temp->next = &this_planet;
-		//temp->next = NULL;
-	}
+	add_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
 	while(this_planet.life > 0){ //until end of life of planet
 		usleep(10000);
@@ -42,6 +33,19 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	}
 	pthread_exit(NULL);
 	//TODO PRINT MESSAGE TO MQ, THAT LIFE HAS ENDED.
+}
+
+void add_Planet(planet_type* planet_to_add){
+	if(planet_list == NULL){ //if its the first planet added
+		planet_list = planet_to_add;
+	}
+	else{
+		planet_type * temp = planet_list;
+		while(temp->next != NULL){
+			temp = temp->next;
+		}
+		temp->next = planet_to_add;
+	}
 }
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for cairo, will be triggered each time a draw event is executed
                               gpointer user_data)
