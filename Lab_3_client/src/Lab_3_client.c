@@ -38,7 +38,7 @@ int main(void)
 	if(onlyTest == 0){
 
 		planet_type testPlanet = {0};
-		strcpy(testPlanet.name,"Earth");	// Name of planet
+		strcpy(testPlanet.name,"Earth\0");	// Name of planet
 		testPlanet.sx = 200;			// X-axis position
 		testPlanet.sy = 300;			// Y-axis position
 		testPlanet.vx = 0;			// X-axis velocity
@@ -49,7 +49,7 @@ int main(void)
 		testPlanet.pid[30];	// String containing ID of creating process
 
 		planet_type testPlanet2 = {0};
-		strcpy(testPlanet2.name,"Sun");	// Name of planet
+		strcpy(testPlanet2.name,"Sun\0");	// Name of planet
 		testPlanet2.sx = 300;			// X-axis position
 		testPlanet2.sy = 300;			// Y-axis position
 		testPlanet2.vx = 0;			// X-axis velocity
@@ -60,7 +60,7 @@ int main(void)
 		testPlanet2.pid[30];
 
 		planet_type planet3 = {0};
-		strcpy(planet3.name,"comet");	// Name of planet
+		strcpy(planet3.name,"comet\0");	// Name of planet
 		planet3.sx = 500;			// X-axis position
 		planet3.sy = 300;			// Y-axis position
 		planet3.vx = 0.1;			// X-axis velocity
@@ -71,14 +71,14 @@ int main(void)
 		planet3.pid[30];
 
 		planet_type dyingstar = {0};
-		strcpy(dyingstar.name,"Dying star");	// Name of planet
+		strcpy(dyingstar.name,"Dying star\0");	// Name of planet
 		dyingstar.sx = 500;			// X-axis position
 		dyingstar.sy = 400;			// Y-axis position
 		dyingstar.vx = 0;			// X-axis velocity
 		dyingstar.vy = 0;			// Y-axis velocity
 		dyingstar.mass = pow(10,9);		// Planet mass
 		dyingstar.next = NULL;		// Pointer to next planet in linked list
-		dyingstar.life = pow(10,2);		// Planet life
+		dyingstar.life = pow(10,3);		// Planet life
 		dyingstar.pid[30];
 
 		MQwrite(mqToServer, &testPlanet);

@@ -100,9 +100,9 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 				cairo_set_source_rgb(cr, 0, 0, 0);
 			}
 			cairo_arc(cr, planet_to_draw->sx,planet_to_draw->sy,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
-			cairo_move_to(cr, planet_to_draw->sx,planet_to_draw->sy);
 			cairo_fill(cr);
-		    cairo_show_text(cr, "You probably do not want to debug using text output, but you can");
+			cairo_move_to(cr, planet_to_draw->sx-25,planet_to_draw->sy-25);
+		    cairo_show_text(cr, planet_to_draw->name);
 			planet_to_draw = planet_to_draw->next;
     	}
     //pthread_mutex_unlock(&mutex);
