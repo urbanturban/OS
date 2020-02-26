@@ -101,9 +101,17 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 			}
 			cairo_arc(cr, planet_to_draw->sx,planet_to_draw->sy,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
 			cairo_fill(cr);
-			cairo_move_to(cr, planet_to_draw->sx-25,planet_to_draw->sy-25);
+			cairo_move_to(cr, planet_to_draw->sx-50,planet_to_draw->sy-30);
 		    cairo_show_text(cr, planet_to_draw->name);
-			planet_to_draw = planet_to_draw->next;
+
+		    int length = snprintf( NULL, 0, "%d", planet_to_draw->life);			//Converting life to printable string
+			char* life = malloc( length + 1 );										//Converting life to printable string
+			snprintf( life, length + 1, "%d", planet_to_draw->life);				//Converting life to printable string
+
+		    cairo_move_to(cr, planet_to_draw->sx+50,planet_to_draw->sy+30);
+		    cairo_show_text(cr, life);
+		    free(life);
+		    planet_to_draw = planet_to_draw->next;
     	}
     //pthread_mutex_unlock(&mutex);
     }
