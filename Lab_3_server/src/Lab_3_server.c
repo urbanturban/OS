@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include "wrapper.h"
 
-#define SERVER_MQ "/superQueue"
+#define SERVER_MQ "/superQueue3451"
 
 #define DT 10
 static void do_drawing(cairo_t *);
@@ -78,24 +78,42 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
           CAIRO_FONT_SLANT_NORMAL,
           CAIRO_FONT_WEIGHT_BOLD);
 
-    planet_type *planet_to_draw = (planet_type*)malloc(sizeof(planet_type));
-    pthread_mutex_lock(&mutex);
+    planet_type *planet_to_draw;
+    //pthread_mutex_lock(&mutex);
     if(planet_list->next != NULL){
     	planet_to_draw = planet_list->next;
     	while(planet_to_draw != NULL){
 			if(strcmp(planet_to_draw->name, "Sun") == 0){
 				cairo_set_source_rgb(cr, 1, 0, 0); //Set RGB source of cairo, 0,0,0 = black
 			}
-			else {
+			else if(strcmp(planet_to_draw->name, "Earth") == 0) {
 				cairo_show_text(cr, "PRINTING EARTH");
 				cairo_set_source_rgb(cr, 0, 0, 1);
 			}
+			else if(strcmp(planet_to_draw->name, "Comet") == 0) {
+				cairo_set_source_rgb(cr, 0, 1, 0);
+			}
+			else if(strcmp(planet_to_draw->name, "Dying star") == 0) {
+				cairo_set_source_rgb(cr, 0.5, 0.2, 0.1);
+			}
+			else {
+				cairo_set_source_rgb(cr, 0, 0, 0);
+			}
 			cairo_arc(cr, planet_to_draw->sx,planet_to_draw->sy,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
-			cairo_move_to(cr, planet_to_draw->sx,planet_to_draw->sy);
 			cairo_fill(cr);
-			planet_to_draw = planet_to_draw->next;
+			cairo_move_to(cr, planet_to_draw->sx-50,planet_to_draw->sy-30);
+		    cairo_show_text(cr, planet_to_draw->name);
+
+		    int length = snprintf( NULL, 0, "%d", planet_to_draw->life);			//Converting life to printable string
+			char* life = malloc( length + 1 );										//Converting life to printable string
+			snprintf( life, length + 1, "%d", planet_to_draw->life);				//Converting life to printable string
+
+		    cairo_move_to(cr, planet_to_draw->sx+50,planet_to_draw->sy+30);
+		    cairo_show_text(cr, life);
+		    free(life);
+		    planet_to_draw = planet_to_draw->next;
     	}
-    pthread_mutex_unlock(&mutex);
+    //pthread_mutex_unlock(&mutex);
     }
 
 
@@ -155,24 +173,28 @@ void * MQ_listener(void * args){
 
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
-	MQcreate(&serverMQ, MQserverName);
+	int status = MQcreate(&serverMQ,MQserverName);
 
 	planet_type planet;
-	planet_type *planetPtr;
-
-	while(1){
-		if(MQread(serverMQ, &planetPtr) == 1){
-			pthread_create(pt+i-1, NULL, &planet_thread, &planet);
-			i++;
-			pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
-			usleep(10);
+	planet_type *planetPtr = &planet;
+	pthread_t array[10];
+	if(status != 0){
+		while(strcmp(planet.name, "deathstar") != 0){
+			if(MQread(serverMQ, &planetPtr) != 0){
+				//pthread_create(&array[i-1],NULL, &planet_thread, &planet);
+				//i++;
+				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
+				i++;
+				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
+				usleep(10);
+			}
+			else usleep(10);
 		}
 	}
 	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
 	free(pt);
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
-
 }
 
 int main(int argc, char *argv[]) //Main function
@@ -214,7 +236,7 @@ int main(int argc, char *argv[]) //Main function
 
     //GUI stuff, don't touch unless you know what you are doing, or if you talked to me
     gtk_init(&argc, &argv); //Initialize GTK environment
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //Create a new window which will serve as your top layer
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL); //Create a new MQ_listenerwindow which will serve as your top layer
     darea = gtk_drawing_area_new(); //Create draw area, which will be used under top layer window
     gtk_container_add(GTK_CONTAINER(window), darea); //add draw area to top layer window
     g_signal_connect(G_OBJECT(darea), "draw",
