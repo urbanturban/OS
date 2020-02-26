@@ -16,16 +16,48 @@
 
 #define SERVER_MQ "/superQueue3451"
 
+int numberOfPlanets = 1;
+
+void * deathMessage(void*args){
+
+	mqd_t mqFromServer;
+	char mqFromSeName[30];
+	strcpy( mqFromSeName,(char*)args);//kopiera rätt mq namn över i mqFromSeName
+	MQcreate(&mqFromServer, mqFromSeName);
+
+	planet_type buffer;
+	planet_type *ptr = &buffer;
+
+	while(numberOfPlanets > 0){
+		MQread(mqFromServer, &ptr);
+		if(strcmp(buffer.name, "\0") != 0){
+			printf("%s is dead\n", buffer.name);
+			strcpy( buffer.name, "\0");
+			numberOfPlanets--;
+		}
+		sleep(1);
+	}
+
+	MQclose(&mqFromServer, mqFromSeName);
+	mq_unlink(mqFromSeName);
+}
+
 int main(void)
 {
 	int onlyTest = 0;
 
-	planet_type planet;
+	pthread_t dM;
+
+	planet_type planet={0};
+	char mqFromSeName[30] = "\0";
+	strcpy(planet.pid, "/\0");
 	pid_t pid = getpid();
-	sprintf(planet.pid, "%d", (int)pid);
-	mqd_t mqFromServer = NULL;
-	//char mqFromSeName* = (char*)malloc(sizeof(char)*);
-	//char mqFromSeName[] = "/";
+	sprintf(mqFromSeName, "%d", (int)pid);//skriv över PID till mqFromSeName
+	strcat(planet.pid, mqFromSeName);//lägg till PID till planet PID som då består av "/"+PID
+	strcpy(mqFromSeName, planet.pid);//kopiera så att mqFromSeName  har samma som planet.pid
+
+	pthread_create(&dM, NULL, &deathMessage, mqFromSeName);
+
 
 	char toServerMQName[] = SERVER_MQ;
 	mqd_t mqToServer;
@@ -46,7 +78,7 @@ int main(void)
 		testPlanet.mass = 1000;		// Planet mass
 		testPlanet.next = NULL;		// Pointer to next planet in linked list
 		testPlanet.life = pow(10,8);		// Planet life
-		testPlanet.pid[30];	// String containing ID of creating process
+		strcpy(testPlanet.pid, mqFromSeName);	// String containing ID of creating process
 
 		planet_type testPlanet2 = {0};
 		strcpy(testPlanet2.name,"Sun\0");	// Name of planet
@@ -57,7 +89,7 @@ int main(void)
 		testPlanet2.mass = pow(10,8);		// Planet mass
 		testPlanet2.next = NULL;		// Pointer to next planet in linked list
 		testPlanet2.life = pow(10,8);		// Planet life
-		testPlanet2.pid[30];
+		strcpy(testPlanet2.pid, mqFromSeName);
 
 		planet_type planet3 = {0};
 		strcpy(planet3.name,"comet\0");	// Name of planet
@@ -68,7 +100,7 @@ int main(void)
 		planet3.mass = pow(10,3);		// Planet mass
 		planet3.next = NULL;		// Pointer to next planet in linked list
 		planet3.life = pow(10,8);		// Planet life
-		planet3.pid[30];
+		strcpy(planet3.pid, mqFromSeName);
 
 		planet_type dyingstar = {0};
 		strcpy(dyingstar.name,"Dying star\0");	// Name of planet
@@ -79,13 +111,13 @@ int main(void)
 		dyingstar.mass = pow(10,9);		// Planet mass
 		dyingstar.next = NULL;		// Pointer to next planet in linked list
 		dyingstar.life = pow(10,3);		// Planet life
-		dyingstar.pid[30];
+		strcpy(dyingstar.pid, mqFromSeName);
 
 		MQwrite(mqToServer, &testPlanet);
 		MQwrite(mqToServer, &testPlanet2);
 		MQwrite(mqToServer, &planet3);
 		MQwrite(mqToServer, &dyingstar);
-
+		numberOfPlanets = 4;
 
 		sleep(20);
 
@@ -120,10 +152,6 @@ int main(void)
 
 				//printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
 
-				if(mqFromServer == NULL){
-				//usleep(10);
-				//MQcreate(&mqFromServer, mqFromSeName);
-				}
 				MQwrite(mqToServer, &planet);
 			}
 		}
@@ -131,8 +159,6 @@ int main(void)
 
 
 	MQclose(&mqToServer, toServerMQName);
-	//MQclose(&mqFromServer);
-	//mq_unlink(mqFromServer);
 
 	printf("END");
 	return EXIT_SUCCESS;
