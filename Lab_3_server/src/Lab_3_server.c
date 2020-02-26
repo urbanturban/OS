@@ -22,16 +22,16 @@ void * planet_thread (void*args) //calculates own position every 10ms
 {
 	planet_type this_planet = *((planet_type *)args);
 	pthread_mutex_lock(&mutex);
-	if(planet_list->next == NULL){ //if its the first planet added
-		planet_list->next = &this_planet;
+	if(planet_list == NULL){ //if its the first planet added
+		planet_list = &this_planet;
 	}
 	else{
-		planet_type * temp = planet_list->next;
+		planet_type * temp = planet_list;
 		while(temp->next != NULL){
 			temp = temp->next;
 		}
 		temp->next = &this_planet;
-		this_planet.next = NULL;
+		//temp->next = NULL;
 	}
 	pthread_mutex_unlock(&mutex);
 	while(this_planet.life > 0){ //until end of life of planet
@@ -78,10 +78,9 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
           CAIRO_FONT_SLANT_NORMAL,
           CAIRO_FONT_WEIGHT_BOLD);
 
-    planet_type *planet_to_draw;
+    	planet_type *planet_to_draw;
     //pthread_mutex_lock(&mutex);
-    if(planet_list->next != NULL){
-    	planet_to_draw = planet_list->next;
+    	planet_to_draw = planet_list;
     	while(planet_to_draw != NULL){
 			if(strcmp(planet_to_draw->name, "Sun") == 0){
 				cairo_set_source_rgb(cr, 1, 0, 0); //Set RGB source of cairo, 0,0,0 = black
@@ -114,7 +113,6 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 		    planet_to_draw = planet_to_draw->next;
     	}
     //pthread_mutex_unlock(&mutex);
-    }
 
 
     //------------------------------------------Insert planet drawings Above-------------------------------------------
@@ -230,7 +228,7 @@ int main(int argc, char *argv[]) //Main function
 	pthread_t i_am_thread;
 	pthread_t i_am_thread2;
 	pthread_t i_am_thread3;
-	planet_list = (planet_type*)malloc(sizeof(planet_type));
+	//planet_list = (planet_type*)malloc(sizeof(planet_type));
 
     //----------------------------------------Variable declarations should be placed Above---------------------------------
 
