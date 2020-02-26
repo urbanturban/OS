@@ -18,6 +18,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 planet_type * planet_list = NULL; //head
 void calculate_planet_pos(planet_type *p1);
 void add_Planet(planet_type *p);
+void delete_Planet(planet_type *p);
 
 void * planet_thread (void*args) //calculates own position every 10ms
 {
@@ -31,6 +32,9 @@ void * planet_thread (void*args) //calculates own position every 10ms
 		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
+	pthread_mutex_lock(&mutex);
+	delete_Planet(&this_planet);
+	pthread_mutex_unlock(&mutex);
 	pthread_exit(NULL);
 	//TODO PRINT MESSAGE TO MQ, THAT LIFE HAS ENDED.
 }
@@ -47,6 +51,21 @@ void add_Planet(planet_type* planet_to_add){
 		temp->next = planet_to_add;
 	}
 }
+
+void delete_Planet(planet_type* planet_to_delete){
+	if(planet_list == NULL){
+		//printf("Nothing to delete\n");
+	}
+	else {
+		planet_type *temp = planet_list;
+		while(temp->next != planet_to_delete){
+			temp = temp->next;
+		}
+		temp->next = planet_to_delete->next;
+
+	}
+}
+
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for cairo, will be triggered each time a draw event is executed
                               gpointer user_data)
 {
