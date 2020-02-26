@@ -168,31 +168,23 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
 }
 
 void * MQ_listener(void * args){
-	pthread_t *pt = (pthread_t*)malloc(sizeof(pthread_t));
-	int i = 1;
-
+	pthread_t pt;
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
-	int status = MQcreate(&serverMQ,MQserverName);
+	MQcreate(&serverMQ, MQserverName);
 
-	planet_type planet;
-	planet_type *planetPtr = &planet;
-	pthread_t array[10];
-	if(status != 0){
-		while(strcmp(planet.name, "deathstar") != 0){
-			if(MQread(serverMQ, &planetPtr) != 0){
-				//pthread_create(&array[i-1],NULL, &planet_thread, &planet);
-				//i++;
-				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
-				i++;
-				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
-				usleep(10);
-			}
-			else usleep(10);
+	planet_type planet = {0};
+	planet_type* ptr = &planet;
+
+	while(strcmp(planet.name, "deathstar") != 0){
+		MQread(serverMQ, &ptr);
+		if(planet.name != NULL && strcmp(planet.name, "deathstar") != 0){
+			pthread_create(&pt, NULL, &planet_thread, &planet);
+			usleep(10);
+			strcpy(planet.name, "\0");
 		}
 	}
-	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
-	free(pt);
+
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
 }
