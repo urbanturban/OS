@@ -76,11 +76,15 @@ void delete_Planet(planet_type* planet_to_delete){
 	}
 	else {
 		planet_type *temp = planet_list;
-		while(temp->next != planet_to_delete){
-			temp = temp->next;
+		if(temp == planet_to_delete){
+			planet_list = planet_list->next;
 		}
-		temp->next = planet_to_delete->next;
-
+		else{
+			while(temp->next != planet_to_delete){
+				temp = temp->next;
+			}
+			temp->next = planet_to_delete->next;
+		}
 	}
 }
 
