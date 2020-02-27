@@ -15,7 +15,7 @@
 #include "wrapper.h"
 
 #define SERVER_MQ "/superQueue3451"
-
+#define CLIENT_NR 0 //1 = client CA, 2 = client CB
 int numberOfPlanets = 1;
 
 void * deathMessage(void*args){
@@ -69,7 +69,6 @@ int main(void)
 	}
 
 	if(onlyTest == 0){
-
 		planet_type testPlanet = {0};
 		strcpy(testPlanet.name,"Earth\0");	// Name of planet
 		testPlanet.sx = 200;			// X-axis position
@@ -114,17 +113,22 @@ int main(void)
 		dyingstar.life = pow(10,3);		// Planet life
 		strcpy(dyingstar.pid, mqFromSeName);
 
-		MQwrite(mqToServer, &testPlanet);
-		MQwrite(mqToServer, &testPlanet2);
-		MQwrite(mqToServer, &planet3);
-		MQwrite(mqToServer, &dyingstar);
-		numberOfPlanets = 4;
+		if(CLIENT_NR){
+			MQwrite(mqToServer, &testPlanet); //numberOfPlanets++;
+			MQwrite(mqToServer, &testPlanet2); //numberOfPlanets++;
+			MQwrite(mqToServer, &planet3); //numberOfPlanets++;
+			numberOfPlanets = 3;
+		}
+		if(!CLIENT_NR){
+			MQwrite(mqToServer, &dyingstar);
+			sleep(25);
+			planet_type deathstar; //StarWars planet destroyer that closes server MQ and shuts down program. lul
+			strcpy(deathstar.name, "deathstar");
+			MQwrite(mqToServer, &deathstar);
+		}
+		//numberOfPlanets = 4;
 
-		sleep(20);
 
-		planet_type deathstar;
-		strcpy(deathstar.name, "deathstar");
-		MQwrite(mqToServer, &deathstar);
 
 	}
 	else{

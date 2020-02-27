@@ -35,8 +35,8 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	//mq Hantering
 
 	while(this_planet.life > 0 && //as long as planet has life
-			(this_planet.sx > 0) && (this_planet.sx < 800)) //&& //is within bounds: x axis
-			//(this_planet.sy > 0) && (this_planet.sy < 800)) //is withing bounds: y axis
+			(this_planet.sx > 0) && (this_planet.sx < 800) && //is within bounds: x axis
+			(this_planet.sy > 0) && (this_planet.sy < 800)) //is within bounds: y axis
 	{
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
