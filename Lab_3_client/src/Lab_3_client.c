@@ -13,9 +13,11 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "wrapper.h"
+#include <unistd.h>
+#include <math.h>
 
 #define SERVER_MQ "/superQueue3451"
-#define CLIENT_NR 0 //1 = client CA, 2 = client CB
+//#define CLIENT_NR 0 //1 = client CA, 2 = client CB
 int numberOfPlanets = 1;
 
 void * deathMessage(void*args){
@@ -28,7 +30,7 @@ void * deathMessage(void*args){
 	planet_type buffer;
 	planet_type *ptr = &buffer;
 
-	while(numberOfPlanets > 0){
+	while(numberOfPlanets != 0){
 		MQread(mqFromServer, &ptr);
 		if(strcmp(buffer.name, "\0") != 0){
 			printf("%s is dead\n", buffer.name);
@@ -40,12 +42,11 @@ void * deathMessage(void*args){
 
 	MQclose(&mqFromServer, mqFromSeName);
 	mq_unlink(mqFromSeName);
-
+	pthread_exit(NULL);
 }
 
 int main(void)
 {
-	int onlyTest = 0;
 
 	pthread_t dM;
 
@@ -67,8 +68,11 @@ int main(void)
 		printf("ERROR! COULD NOT CONNECT TO SERVER_MQ");
 		//return-1;
 	}
+	//choose client or no client
+	printf("CA: 1, CB: 2, Other: 3:\n");
+	int client_version;
+	scanf("%d", &client_version);
 
-	if(onlyTest == 0){
 		planet_type testPlanet = {0};
 		strcpy(testPlanet.name,"Earth\0");	// Name of planet
 		testPlanet.sx = 200;			// X-axis position
@@ -113,33 +117,27 @@ int main(void)
 		dyingstar.life = pow(10,3);		// Planet life
 		strcpy(dyingstar.pid, mqFromSeName);
 
-		if(CLIENT_NR){
-			MQwrite(mqToServer, &testPlanet); //numberOfPlanets++;
-			MQwrite(mqToServer, &testPlanet2); //numberOfPlanets++;
-			MQwrite(mqToServer, &planet3); //numberOfPlanets++;
-			numberOfPlanets = 3;
+	if(client_version == 1){
+			MQwrite(mqToServer, &testPlanet); numberOfPlanets++;
+			MQwrite(mqToServer, &testPlanet2); numberOfPlanets++;
+			MQwrite(mqToServer, &planet3); numberOfPlanets++;
+			//numberOfPlanets = 3;
 		}
-		if(!CLIENT_NR){
+	else if(client_version == 2){
 			MQwrite(mqToServer, &dyingstar);
-			sleep(25);
+			/*
+			sleep(60);
 			planet_type deathstar; //StarWars planet destroyer that closes server MQ and shuts down program. lul
 			strcpy(deathstar.name, "deathstar");
 			MQwrite(mqToServer, &deathstar);
+			*/
 		}
-		//numberOfPlanets = 4;
-
-
-
-	}
-	else{
+	else if(client_version == 3){
 		int menu = 0;
-
 		while(menu != -1){
 			printf("New planet? 1(yes) or -1(ENDs program)\n");
 			scanf("%d", &menu);
-
 			if(menu == 1){
-
 				printf("Planet name:\n");
 				scanf("%s", planet.name);
 				printf("%s mass: ", planet.name);
@@ -154,19 +152,16 @@ int main(void)
 				scanf("%lf", &planet.vy);
 				printf("%s life: ", planet.name);
 				scanf("%d", &planet.life);
-
 				//printf("\n%s:\nMass: %lf\nX-axis position: %lf\nY-axis position: %lf\nX-axis velocity: %lf\nY-axis velocity: %lf\nLife: %d\n", planet.name, planet.mass, planet.sx, planet.sy, planet.vx, planet.vy, planet.life);
-
 				MQwrite(mqToServer, &planet);
 				numberOfPlanets++;
 			}
-		}
+		} numberOfPlanets--;
 	}
-
-
 	MQclose(&mqToServer, toServerMQName);
 
-	printf("END");
-	pthread_exit(NULL);
+
+	pthread_join(dM,NULL);
+	printf("END\n");
 	//return EXIT_SUCCESS;
 }

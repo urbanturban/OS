@@ -208,6 +208,7 @@ void * MQ_listener(void * args){
 
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[]) //Main function
