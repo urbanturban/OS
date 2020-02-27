@@ -110,7 +110,6 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 				cairo_set_source_rgb(cr, 1, 0, 0); //Set RGB source of cairo, 0,0,0 = black
 			}
 			else if(strcmp(planet_to_draw->name, "Earth") == 0) {
-				cairo_show_text(cr, "PRINTING EARTH");
 				cairo_set_source_rgb(cr, 0, 0, 1);
 			}
 			else if(strcmp(planet_to_draw->name, "Comet") == 0) {
