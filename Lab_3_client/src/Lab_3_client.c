@@ -40,6 +40,7 @@ void * deathMessage(void*args){
 
 	MQclose(&mqFromServer, mqFromSeName);
 	mq_unlink(mqFromSeName);
+
 }
 
 int main(void)

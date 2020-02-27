@@ -34,14 +34,19 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	MQconnect(&mqToClient, mqToClientName);
 	//mq Hantering
 
-	while(this_planet.life > 0){ //until end of life of planet
+	while(this_planet.life > 0 && //as long as planet has life
+			(this_planet.sx > 0) && (this_planet.sx < 800)) //&& //is within bounds: x axis
+			//(this_planet.sy > 0) && (this_planet.sy < 800)) //is withing bounds: y axis
+	{
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
 		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
 
+
 	//MQ hantering
+	//TODO death reason
 	MQwrite(mqToClient, &this_planet);
 	usleep(10);
 	MQclose(&mqToClient, mqToClientName);
@@ -90,26 +95,6 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for c
 
 static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface area cr
 {
-	/*
-    cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
-    x++; //dummy calculation
-    y++;
-    x2++;
-    cairo_select_font_face(cr, "Purisa",
-          CAIRO_FONT_SLANT_NORMAL,
-          CAIRO_FONT_WEIGHT_BOLD);
-    cairo_move_to(cr, 10, 10);
-    cairo_show_text(cr, "You probably do not want to debug using text output, but you can");
-    cairo_arc(cr, x,y,50,0,2*3.1415); //Create cairo shape: Parameters: Surface area, x pos, y pos, radius, Angle 1, Angle 2
-    cairo_fill(cr);
-    cairo_arc(cr, x2+100,0,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
-    cairo_fill(cr);
-    //Printing planets should reasonably be done something like this:
-    // --------- for all planets in list:
-    // --------- cairo_arc(cr, planet.xpos, planet.ypos, 10, 0, 2*3.1415)
-    // --------- cairo_fill(cr)
-
-     */
     //------------------------------------------Insert planet drawings below-------------------------------------------
 	cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
     cairo_select_font_face(cr, "Purisa",
@@ -227,33 +212,6 @@ void * MQ_listener(void * args){
 
 int main(int argc, char *argv[]) //Main function
 {
-	//placeholders until message queue parsing from client is complete
-	planet_type testPlanet = {0};
-	strcpy(testPlanet.name,"Earth");	// Name of planet
-	testPlanet.sx = 200;			// X-axis position
-	testPlanet.sy = 300;			// Y-axis position
-	testPlanet.vx = 0;			// X-axis velocity
-	testPlanet.vy = 0.008;			// Y-axis velocity
-	testPlanet.mass = 1000;		// Planet mass
-	testPlanet.next = NULL;		// Pointer to next planet in linked list
-	testPlanet.life = pow(10,8);		// Planet life
-	testPlanet.pid[30];	// String containing ID of creating process
-
-	planet_type testPlanet2 = {0};
-	strcpy(testPlanet2.name,"Sun");	// Name of planet
-	testPlanet2.sx = 300;			// X-axis position
-	testPlanet2.sy = 300;			// Y-axis position
-	testPlanet2.vx = 0;			// X-axis velocity
-	testPlanet2.vy = 0;			// Y-axis velocity
-	testPlanet2.mass = pow(10,8);		// Planet mass
-	testPlanet2.next = NULL;		// Pointer to next planet in linked list
-	testPlanet2.life = pow(10,8);		// Planet life
-	testPlanet2.pid[30];	// String containing ID of creating process
-
-
-
-
-
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
 	pthread_t i_am_thread2;
