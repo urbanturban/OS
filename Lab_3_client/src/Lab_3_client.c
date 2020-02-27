@@ -118,19 +118,13 @@ int main(void)
 		strcpy(dyingstar.pid, mqFromSeName);
 
 	if(client_version == 1){
-			MQwrite(mqToServer, &testPlanet); numberOfPlanets++;
-			MQwrite(mqToServer, &testPlanet2); numberOfPlanets++;
-			MQwrite(mqToServer, &planet3); numberOfPlanets++;
-			//numberOfPlanets = 3;
+			MQwrite(mqToServer, &testPlanet);
+			MQwrite(mqToServer, &testPlanet2);
+			MQwrite(mqToServer, &planet3);
+			numberOfPlanets = 3;
 		}
 	else if(client_version == 2){
 			MQwrite(mqToServer, &dyingstar);
-			/*
-			sleep(60);
-			planet_type deathstar; //StarWars planet destroyer that closes server MQ and shuts down program. lul
-			strcpy(deathstar.name, "deathstar");
-			MQwrite(mqToServer, &deathstar);
-			*/
 		}
 	else if(client_version == 3){
 		int menu = 0;
@@ -163,5 +157,5 @@ int main(void)
 
 	pthread_join(dM,NULL);
 	printf("END\n");
-	//return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

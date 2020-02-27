@@ -100,7 +100,6 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
           CAIRO_FONT_WEIGHT_BOLD);
 
     	planet_type *planet_to_draw;
-    //pthread_mutex_lock(&mutex);
     	planet_to_draw = planet_list;
     	while(planet_to_draw != NULL){
 			if(strcmp(planet_to_draw->name, "Sun") == 0){
@@ -133,8 +132,6 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 		    free(life);
 		    planet_to_draw = planet_to_draw->next;
     	}
-    //pthread_mutex_unlock(&mutex);
-
 
     //------------------------------------------Insert planet drawings Above-------------------------------------------
 
@@ -213,10 +210,6 @@ int main(int argc, char *argv[]) //Main function
 {
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
-	pthread_t i_am_thread2;
-	pthread_t i_am_thread3;
-	//planet_list = (planet_type*)malloc(sizeof(planet_type));
-
     //----------------------------------------Variable declarations should be placed Above---------------------------------
 
     //GUI stuff, don't touch unless you know what you are doing, or if you talked to me
@@ -239,10 +232,6 @@ int main(int argc, char *argv[]) //Main function
 
     //-------------------------------Insert code for pthreads below------------------------------------------------
     pthread_create(&i_am_thread, NULL, &MQ_listener, NULL);//Create MQ_listener thread
-    //Create MQ_listener thread
-    //pthread_create(&i_am_thread3, NULL,&planet_thread,&testPlanet);
-    //pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
-
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
 
