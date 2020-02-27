@@ -26,17 +26,35 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	pthread_mutex_lock(&mutex);
 	add_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
-	while(this_planet.life > 0){ //until end of life of planet
+
+	//mq Hantering
+	char mqToClientName[30]="\0";
+	strcpy(mqToClientName, this_planet.pid);
+	mqd_t mqToClient;
+	MQconnect(&mqToClient, mqToClientName);
+	//mq Hantering
+
+	while(this_planet.life > 0 && //as long as planet has life
+			(this_planet.sx > 0) && (this_planet.sx < 800) && //is within bounds: x axis
+			(this_planet.sy > 0) && (this_planet.sy < 800)) //is within bounds: y axis
+	{
 		usleep(10000);
 		pthread_mutex_lock(&mutex);
 		calculate_planet_pos(&this_planet);
 		pthread_mutex_unlock(&mutex);
 	}
+
+
+	//MQ hantering.
+	MQwrite(mqToClient, &this_planet);//Skickar dödmeddeland
+	usleep(10);
+	MQclose(&mqToClient, mqToClientName);//Stänger denna planets koppling till en kö med motsvarande PID
+	//MQ hantering
+
 	pthread_mutex_lock(&mutex);
 	delete_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
 	pthread_exit(NULL);
-	//TODO PRINT MESSAGE TO MQ, THAT LIFE HAS ENDED.
 }
 
 void add_Planet(planet_type* planet_to_add){
@@ -58,11 +76,15 @@ void delete_Planet(planet_type* planet_to_delete){
 	}
 	else {
 		planet_type *temp = planet_list;
-		while(temp->next != planet_to_delete){
-			temp = temp->next;
+		if(temp == planet_to_delete){
+			planet_list = planet_list->next;
 		}
-		temp->next = planet_to_delete->next;
-
+		else{
+			while(temp->next != planet_to_delete){
+				temp = temp->next;
+			}
+			temp->next = planet_to_delete->next;
+		}
 	}
 }
 
@@ -75,26 +97,6 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, //Draw event for c
 
 static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface area cr
 {
-	/*
-    cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
-    x++; //dummy calculation
-    y++;
-    x2++;
-    cairo_select_font_face(cr, "Purisa",
-          CAIRO_FONT_SLANT_NORMAL,
-          CAIRO_FONT_WEIGHT_BOLD);
-    cairo_move_to(cr, 10, 10);
-    cairo_show_text(cr, "You probably do not want to debug using text output, but you can");
-    cairo_arc(cr, x,y,50,0,2*3.1415); //Create cairo shape: Parameters: Surface area, x pos, y pos, radius, Angle 1, Angle 2
-    cairo_fill(cr);
-    cairo_arc(cr, x2+100,0,25,0,2*3.1415); //These drawings are just examples, remove them once you understood how to draw your planets
-    cairo_fill(cr);
-    //Printing planets should reasonably be done something like this:
-    // --------- for all planets in list:
-    // --------- cairo_arc(cr, planet.xpos, planet.ypos, 10, 0, 2*3.1415)
-    // --------- cairo_fill(cr)
-
-     */
     //------------------------------------------Insert planet drawings below-------------------------------------------
 	cairo_set_source_rgb(cr, 0, 0, 0); //Set RGB source of cairo, 0,0,0 = black
     cairo_select_font_face(cr, "Purisa",
@@ -102,14 +104,12 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
           CAIRO_FONT_WEIGHT_BOLD);
 
     	planet_type *planet_to_draw;
-    //pthread_mutex_lock(&mutex);
     	planet_to_draw = planet_list;
     	while(planet_to_draw != NULL){
 			if(strcmp(planet_to_draw->name, "Sun") == 0){
 				cairo_set_source_rgb(cr, 1, 0, 0); //Set RGB source of cairo, 0,0,0 = black
 			}
 			else if(strcmp(planet_to_draw->name, "Earth") == 0) {
-				cairo_show_text(cr, "PRINTING EARTH");
 				cairo_set_source_rgb(cr, 0, 0, 1);
 			}
 			else if(strcmp(planet_to_draw->name, "Comet") == 0) {
@@ -135,8 +135,6 @@ static void do_drawing(cairo_t *cr) //Do the drawing against the cairo surface a
 		    free(life);
 		    planet_to_draw = planet_to_draw->next;
     	}
-    //pthread_mutex_unlock(&mutex);
-
 
     //------------------------------------------Insert planet drawings Above-------------------------------------------
 
@@ -189,70 +187,32 @@ void calculate_planet_pos(planet_type *p1)  //Function for calculating the posit
 }
 
 void * MQ_listener(void * args){
-	pthread_t *pt = (pthread_t*)malloc(sizeof(pthread_t));
-	int i = 1;
-
+	pthread_t pt;
 	mqd_t serverMQ;
 	char MQserverName[] = SERVER_MQ;
-	int status = MQcreate(&serverMQ,MQserverName);
+	MQcreate(&serverMQ, MQserverName);
 
-	planet_type planet;
-	planet_type *planetPtr = &planet;
-	pthread_t array[10];
-	if(status != 0){
-		while(strcmp(planet.name, "deathstar") != 0){
-			if(MQread(serverMQ, &planetPtr) != 0){
-				//pthread_create(&array[i-1],NULL, &planet_thread, &planet);
-				//i++;
-				pthread_create(pt+i-1, NULL, &planet_thread, &planet);
-				i++;
-				pt = (pthread_t*)realloc(pt, sizeof(pthread_t)*i);
-				usleep(10);
-			}
-			else usleep(10);
+	planet_type planet = {0};
+	planet_type* ptr = &planet;
+
+	while(strcmp(planet.name, "deathstar") != 0){
+		MQread(serverMQ, &ptr);
+		if(planet.name != NULL && strcmp(planet.name, "deathstar") != 0){
+			pthread_create(&pt, NULL, &planet_thread, &planet);
+			usleep(10);
+			strcpy(planet.name, "\0");
 		}
 	}
-	//skapa delete planet func kanske. Men borde inte behövas då planeterna ska ha tagits bort vid detta läge
-	free(pt);
+
 	MQclose(&serverMQ, MQserverName);
 	mq_unlink(MQserverName);
+	pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[]) //Main function
 {
-	//placeholders until message queue parsing from client is complete
-	planet_type testPlanet = {0};
-	strcpy(testPlanet.name,"Earth");	// Name of planet
-	testPlanet.sx = 200;			// X-axis position
-	testPlanet.sy = 300;			// Y-axis position
-	testPlanet.vx = 0;			// X-axis velocity
-	testPlanet.vy = 0.008;			// Y-axis velocity
-	testPlanet.mass = 1000;		// Planet mass
-	testPlanet.next = NULL;		// Pointer to next planet in linked list
-	testPlanet.life = pow(10,8);		// Planet life
-	testPlanet.pid[30];	// String containing ID of creating process
-
-	planet_type testPlanet2 = {0};
-	strcpy(testPlanet2.name,"Sun");	// Name of planet
-	testPlanet2.sx = 300;			// X-axis position
-	testPlanet2.sy = 300;			// Y-axis position
-	testPlanet2.vx = 0;			// X-axis velocity
-	testPlanet2.vy = 0;			// Y-axis velocity
-	testPlanet2.mass = pow(10,8);		// Planet mass
-	testPlanet2.next = NULL;		// Pointer to next planet in linked list
-	testPlanet2.life = pow(10,8);		// Planet life
-	testPlanet2.pid[30];	// String containing ID of creating process
-
-
-
-
-
     //----------------------------------------Variable declarations should be placed below---------------------------------
 	pthread_t i_am_thread;
-	pthread_t i_am_thread2;
-	pthread_t i_am_thread3;
-	//planet_list = (planet_type*)malloc(sizeof(planet_type));
-
     //----------------------------------------Variable declarations should be placed Above---------------------------------
 
     //GUI stuff, don't touch unless you know what you are doing, or if you talked to me
@@ -275,10 +235,6 @@ int main(int argc, char *argv[]) //Main function
 
     //-------------------------------Insert code for pthreads below------------------------------------------------
     pthread_create(&i_am_thread, NULL, &MQ_listener, NULL);//Create MQ_listener thread
-    //Create MQ_listener thread
-    //pthread_create(&i_am_thread3, NULL,&planet_thread,&testPlanet);
-    //pthread_create(&i_am_thread2, NULL,&planet_thread,&testPlanet2);
-
     //-------------------------------Insert code for pthreads above------------------------------------------------
 
 
