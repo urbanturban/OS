@@ -45,18 +45,16 @@ void * planet_thread (void*args) //calculates own position every 10ms
 	}
 
 
-	//MQ hantering
-	//TODO death reason
-	MQwrite(mqToClient, &this_planet);
+	//MQ hantering.
+	MQwrite(mqToClient, &this_planet);//Skickar dödmeddeland
 	usleep(10);
-	MQclose(&mqToClient, mqToClientName);
+	MQclose(&mqToClient, mqToClientName);//Stänger denna planets koppling till en kö med motsvarande PID
 	//MQ hantering
 
 	pthread_mutex_lock(&mutex);
 	delete_Planet(&this_planet);
 	pthread_mutex_unlock(&mutex);
 	pthread_exit(NULL);
-	//TODO PRINT MESSAGE TO MQ, THAT LIFE HAS ENDED.
 }
 
 void add_Planet(planet_type* planet_to_add){
