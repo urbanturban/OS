@@ -18,14 +18,20 @@
 #define sched_RR 1
 #define sched_SJF 2
 #define sched_MQ 3
+#define sched_EDF 4
+
+#define CUSTOM_TASKSET 2
+#define DEFAULT_TASKSET 0
 
 #define QUEUE_SIZE 10
-int sched_type = sched_RR;
+int task_set = DEFAULT_TASKSET;
+int sched_type = sched_EDF;
 int finished = 0;
 int context_switch_program_exit = 0;
 int context_switch = 0;
 int OS_cycles = 0;
 int context_switches = 0;
+
 
 typedef struct taskprop{
     int deadline;		//Deadline of a task, not necesarry to use
@@ -44,6 +50,10 @@ task * waiting_queue = NULL;
 task * exec_task;
 task * idle_task;
 
+task * high_queue; // Multilevel Queues
+task * medium_queue;
+task * low_queue;
+
 
 
 task tasks[QUEUE_SIZE]; //Queue
@@ -52,8 +62,52 @@ int idleTasks = 0;
 
 //Implementera insertfunktioner
 
+void sorted_insert(task** head, task* new_task){ //inserts into list queue based on quantum of the task. Ascending order.
+	if(*head == NULL || (*head)->quantum >=new_task->quantum){ //when new_task is first task in list or if new_task is shortest job.
+		new_task->next = *head;
+		*head = new_task;
+	}
+	else {
+		// Find the task that is before the point of insertion of new_task.
+		task* cursor = *head;
+		while(cursor->next != NULL && cursor->next->quantum < new_task->quantum){
+			cursor = cursor->next;
+		}
+		new_task->next = cursor->next;
+		cursor->next = new_task;
+	}
+}
+void sorted_insert2(task** head, task* new_task){ //ugly quick fix for implementing EDF
+	if(*head == NULL || (*head)->deadline >=new_task->deadline){ //when new_task is first task in list or if new_task is shortest job.
+		new_task->next = *head;
+		*head = new_task;
+	}
+	else {
+		// Find the task that is before the point of insertion of new_task.
+		task* cursor = *head;
+		while(cursor->next != NULL && cursor->next->deadline < new_task->deadline){
+			cursor = cursor->next;
+		}
+		new_task->next = cursor->next;
+		cursor->next = new_task;
+	}
+}
+void sort(task **head, int sched_type){ // take in head of linked list and sort it.
+	task* sorted = NULL; //init sorted list
 
-
+	task* cursor = *head; //traverse the list and insert every task into Sorted list.
+	while(cursor != NULL){
+		task* next = cursor->next; //save ref to next task
+		if(sched_type == sched_SJF){
+			sorted_insert(&sorted, cursor);
+		}
+		else if(sched_type == sched_EDF){
+			sorted_insert2(&sorted, cursor);
+		}
+		cursor = next;
+	}
+	*head = sorted;	//make head point to sorted list
+}
 
 
 //------------------Linked list functions------------------
@@ -217,7 +271,13 @@ task * first_to_last (task * head)
 void readTaskset_n(char * filepath)
 {
 	FILE *reads;											//File handle
-	char * sp = "/home/student/Desktop/Labs_material/taskset.txt";								//File path
+	char * sp;
+	if(task_set == CUSTOM_TASKSET){
+		sp = "/home/student/Desktop/Student_labs/OS/Lab_4/taskset.txt";
+	}
+	else{
+		sp = "/home/student/Desktop/Labs_material/taskset.txt";								//File path
+	}
     reads=fopen(sp, "r");									//Open file
     task * data_struct = malloc(sizeof(task));				//Allocate data
     if (reads==NULL) {										//If reading fails, return
@@ -267,12 +327,19 @@ task * scheduler_n()
 		{
 			return ready_queue;
 		}
-		if (sched_type == sched_SJF) 		//Here is where you implement your EDF scheduling algorithm
-		{
+		if (sched_type == sched_SJF) 		//Here is where you implement your SJF scheduling algorithm
+		{ //Shortest Job First - No Preemption (current executing job completes before picking next shortest job)
+			sort(&ready_queue, sched_type); //sort the ready_queue in ascending order.
 			return ready_queue;
 		}
 		if (sched_type == sched_MQ) 		//Here is where you implement your MQ scheduling algorithm,
 		{
+			return ready_queue;
+		}
+
+		if (sched_type == sched_EDF) 		//EDF scheduling algorithm
+		{
+			sort(&ready_queue, sched_type);
 			return ready_queue;
 		}
 	}
@@ -319,8 +386,26 @@ void dispatch_n(task* exec)
 	}
 }
 
+void sched_picker(){ // user menu to avoid recompiling when showing different parts of the lab
+	int user_input;
+	printf("Choose scheduling policy: 1 = RR, 2 = SJF, 3 = MQ, 4 = EDF \n");
+	scanf("%d",&user_input);
+	if(user_input != 1 && user_input != 2 && user_input != 3 && user_input != 4){ // if other d input
+		user_input = sched_RR; //Default round robin
+	}
+	sched_type = user_input; // scheduler_n() will pick correct scheduling algorithm.
+
+	printf("Choose taskset: 1 = default, 2 = custom\n");
+	scanf("%d", &user_input);
+	if(user_input != 1 && user_input != 2){ // if other d input
+		user_input = DEFAULT_TASKSET; //Default taskset.txt provided with lab.
+	}
+	task_set = user_input; // readTaskset_n() will load correct taskset.txt
+}
+
 int main(int argc, char **argv)
 {
+	sched_picker();			// user menu to avoid recompiling when demonstrating lab
 	char * fp = "hej";			//File path to taskset
 	readTaskset_n(fp); 			//Read taskset
 	task * task_to_be_run; 		//Return taskset from scheduler
