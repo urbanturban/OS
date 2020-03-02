@@ -18,9 +18,10 @@
 #define sched_RR 1
 #define sched_SJF 2
 #define sched_MQ 3
+#define sched_EDF 4
 
 #define QUEUE_SIZE 10
-int sched_type = sched_SJF;
+int sched_type = sched_EDF;
 int finished = 0;
 int context_switch_program_exit = 0;
 int context_switch = 0;
@@ -57,7 +58,7 @@ int idleTasks = 0;
 
 //Implementera insertfunktioner
 
-void sorted_insert(task** head, task* new_task){ //sorts the list/queue based on quantum of the task. Asc order.
+void sorted_insert(task** head, task* new_task){ //inserts into list queue based on quantum of the task. Ascending order.
 	if(*head == NULL || (*head)->quantum >=new_task->quantum){ //when new_task is first task in list or if new_task is shortest job.
 		new_task->next = *head;
 		*head = new_task;
@@ -72,19 +73,37 @@ void sorted_insert(task** head, task* new_task){ //sorts the list/queue based on
 		cursor->next = new_task;
 	}
 }
-void insertion_sort(task **head){ // take in head of linked list and sort it.
+void sorted_insert2(task** head, task* new_task){ //inserts into list queue based on quantum of the task. Ascending order.
+	if(*head == NULL || (*head)->deadline >=new_task->deadline){ //when new_task is first task in list or if new_task is shortest job.
+		new_task->next = *head;
+		*head = new_task;
+	}
+	else {
+		// Find the task that is before the point of insertion of new_task.
+		task* cursor = *head;
+		while(cursor->next != NULL && cursor->next->deadline < new_task->deadline){
+			cursor = cursor->next;
+		}
+		new_task->next = cursor->next;
+		cursor->next = new_task;
+	}
+}
+void sort(task **head, int sched_type){ // take in head of linked list and sort it.
 	task* sorted = NULL; //init sorted list
 
 	task* cursor = *head; //traverse the list and insert every task into Sorted list.
 	while(cursor != NULL){
 		task* next = cursor->next; //save ref to next task
-		sorted_insert(&sorted, cursor);
+		if(sched_type == sched_SJF){
+			sorted_insert(&sorted, cursor);
+		}
+		else if(sched_type == sched_EDF){
+			sorted_insert2(&sorted, cursor);
+		}
 		cursor = next;
 	}
 	*head = sorted;	//make head point to sorted list
 }
-
-
 
 
 //------------------Linked list functions------------------
@@ -300,11 +319,17 @@ task * scheduler_n()
 		}
 		if (sched_type == sched_SJF) 		//Here is where you implement your SJF scheduling algorithm
 		{ //Shortest Job First - No Preemption (current executing job completes before picking next shortest job)
-			insertion_sort(&ready_queue);
+			sort(&ready_queue, sched_type); //sort the ready_queue in ascending order.
 			return ready_queue;
 		}
 		if (sched_type == sched_MQ) 		//Here is where you implement your MQ scheduling algorithm,
 		{
+			return ready_queue;
+		}
+
+		if (sched_type == sched_EDF) 		//EDF scheduling algorithm
+		{
+			sort(&ready_queue, sched_type);
 			return ready_queue;
 		}
 	}
