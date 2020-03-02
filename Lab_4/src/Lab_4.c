@@ -20,7 +20,11 @@
 #define sched_MQ 3
 #define sched_EDF 4
 
+#define CUSTOM_TASKSET 2
+#define DEFAULT_TASKSET 0
+
 #define QUEUE_SIZE 10
+int task_set = DEFAULT_TASKSET;
 int sched_type = sched_EDF;
 int finished = 0;
 int context_switch_program_exit = 0;
@@ -73,7 +77,7 @@ void sorted_insert(task** head, task* new_task){ //inserts into list queue based
 		cursor->next = new_task;
 	}
 }
-void sorted_insert2(task** head, task* new_task){ //inserts into list queue based on quantum of the task. Ascending order.
+void sorted_insert2(task** head, task* new_task){ //ugly quick fix for implementing EDF
 	if(*head == NULL || (*head)->deadline >=new_task->deadline){ //when new_task is first task in list or if new_task is shortest job.
 		new_task->next = *head;
 		*head = new_task;
@@ -267,7 +271,13 @@ task * first_to_last (task * head)
 void readTaskset_n(char * filepath)
 {
 	FILE *reads;											//File handle
-	char * sp = "/home/student/Desktop/Labs_material/taskset.txt";								//File path
+	char * sp;
+	if(task_set == CUSTOM_TASKSET){
+		sp = "/home/student/Desktop/Student_labs/OS/Lab_4/taskset.txt";
+	}
+	else{
+		sp = "/home/student/Desktop/Labs_material/taskset.txt";								//File path
+	}
     reads=fopen(sp, "r");									//Open file
     task * data_struct = malloc(sizeof(task));				//Allocate data
     if (reads==NULL) {										//If reading fails, return
@@ -376,8 +386,26 @@ void dispatch_n(task* exec)
 	}
 }
 
+void sched_picker(){ // user menu to avoid recompiling when showing different parts of the lab
+	int user_input;
+	printf("Choose scheduling policy: 1 = RR, 2 = SJF, 3 = MQ, 4 = EDF \n");
+	scanf("%d",&user_input);
+	if(user_input != 1 && user_input != 2 && user_input != 3 && user_input != 4){ // if other d input
+		user_input = sched_RR; //Default round robin
+	}
+	sched_type = user_input; // scheduler_n() will pick correct scheduling algorithm.
+
+	printf("Choose taskset: 1 = default, 2 = custom\n");
+	scanf("%d", &user_input);
+	if(user_input != 1 && user_input != 2){ // if other d input
+		user_input = DEFAULT_TASKSET; //Default taskset.txt provided with lab.
+	}
+	task_set = user_input; // readTaskset_n() will load correct taskset.txt
+}
+
 int main(int argc, char **argv)
 {
+	sched_picker();			// user menu to avoid recompiling when demonstrating lab
 	char * fp = "hej";			//File path to taskset
 	readTaskset_n(fp); 			//Read taskset
 	task * task_to_be_run; 		//Return taskset from scheduler
