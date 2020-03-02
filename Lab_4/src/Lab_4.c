@@ -20,12 +20,13 @@
 #define sched_MQ 3
 
 #define QUEUE_SIZE 10
-int sched_type = sched_RR;
+int sched_type = sched_SJF;
 int finished = 0;
 int context_switch_program_exit = 0;
 int context_switch = 0;
 int OS_cycles = 0;
 int context_switches = 0;
+
 
 typedef struct taskprop{
     int deadline;		//Deadline of a task, not necesarry to use
@@ -44,6 +45,10 @@ task * waiting_queue = NULL;
 task * exec_task;
 task * idle_task;
 
+task * high_queue; // Multilevel Queues
+task * medium_queue;
+task * low_queue;
+
 
 
 task tasks[QUEUE_SIZE]; //Queue
@@ -52,6 +57,32 @@ int idleTasks = 0;
 
 //Implementera insertfunktioner
 
+void sorted_insert(task** head, task* new_task){ //sorts the list/queue based on quantum of the task. Asc order.
+	if(*head == NULL || (*head)->quantum >=new_task->quantum){ //when new_task is first task in list or if new_task is shortest job.
+		new_task->next = *head;
+		*head = new_task;
+	}
+	else {
+		// Find the task that is before the point of insertion of new_task.
+		task* cursor = *head;
+		while(cursor->next != NULL && cursor->next->quantum < new_task->quantum){
+			cursor = cursor->next;
+		}
+		new_task->next = cursor->next;
+		cursor->next = new_task;
+	}
+}
+void insertion_sort(task **head){ // take in head of linked list and sort it.
+	task* sorted = NULL; //init sorted list
+
+	task* cursor = *head; //traverse the list and insert every task into Sorted list.
+	while(cursor != NULL){
+		task* next = cursor->next; //save ref to next task
+		sorted_insert(&sorted, cursor);
+		cursor = next;
+	}
+	*head = sorted;	//make head point to sorted list
+}
 
 
 
@@ -267,8 +298,9 @@ task * scheduler_n()
 		{
 			return ready_queue;
 		}
-		if (sched_type == sched_SJF) 		//Here is where you implement your EDF scheduling algorithm
-		{
+		if (sched_type == sched_SJF) 		//Here is where you implement your SJF scheduling algorithm
+		{ //Shortest Job First - No Preemption (current executing job completes before picking next shortest job)
+			insertion_sort(&ready_queue);
 			return ready_queue;
 		}
 		if (sched_type == sched_MQ) 		//Here is where you implement your MQ scheduling algorithm,
