@@ -453,6 +453,7 @@ void sched_picker(){ // user menu to avoid recompiling when showing different pa
 	printf("Choose scheduling policy: 1 = RR, 2 = SJF, 3 = MQ, 4 = EDF \n");
 	scanf("%d",&user_input);
 	if(user_input != 1 && user_input != 2 && user_input != 3 && user_input != 4){ // if other d input
+		printf("Invalid choice: Loading RR scheduling\n");
 		user_input = sched_RR; //Default round robin
 	}
 	sched_type = user_input; // scheduler_n() will pick correct scheduling algorithm.
@@ -460,6 +461,7 @@ void sched_picker(){ // user menu to avoid recompiling when showing different pa
 	printf("Choose taskset: 1 = default, 2 = custom\n");
 	scanf("%d", &user_input);
 	if(user_input != 1 && user_input != 2){ // if other d input
+		printf("Invalid choice: Loading Default taskset\n");
 		user_input = DEFAULT_TASKSET; //Default taskset.txt provided with lab.
 	}
 	task_set = user_input; // readTaskset_n() will load correct taskset.txt
