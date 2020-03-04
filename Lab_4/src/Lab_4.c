@@ -273,7 +273,7 @@ void readTaskset_n(char * filepath)
 	FILE *reads;											//File handle
 	char * sp;
 	if(task_set == CUSTOM_TASKSET){
-		sp = "/home/ea/eclipse-workspace/OS/Lab_4/taskset.txt";
+		sp = "./taskset.txt";
 
 	}
 	else{
