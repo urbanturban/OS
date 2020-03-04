@@ -335,68 +335,90 @@ task * scheduler_n()
 		}
 		if (sched_type == sched_MQ) 		//Here is where you implement your MQ scheduling algorithm,
 		{
-			while(ready_queue != NULL){//medans listan inte är tom(detta är för att tömma listan på alla tasks som inte är pågående)
-				if(ready_queue->priority == 1){/*ta bort noden från ready queue, ändra prio och skicka nod till high*/
-					ready_queue->priority = 8;//sätt till högsta prioritet
-					high_queue = push(high_queue, *ready_queue);//skicka nod med ny prioritet till higgh_queue
-					ready_queue = remove_front(ready_queue);
+			task tp;
+			task * temporary;
+			while(ready_queue != NULL){
+				temporary=&tp;
+				if(ready_queue->priority == 1){//Om prion är 1 ska task läggas längst bak i high_queue
+					copy_task(&temporary, ready_queue);
+					tp.priority = 2;
+					ready_queue = pop(ready_queue);
+					high_queue = push(high_queue, tp);
+					temporary = NULL;
 				}
-				else if(ready_queue->priority == 8){/*ta bort noden från ready queue, ändra prio och skicka nod till medium*/
-					ready_queue->priority--;
-					medium_queue = push(medium_queue, *ready_queue);
-					ready_queue = remove_front(ready_queue);
+				else if(ready_queue->priority == 2){
+					copy_task(&temporary, ready_queue);
+					tp.priority = 3;
+					ready_queue = pop(ready_queue);
+					medium_queue = push(medium_queue, tp);
+					temporary = NULL;
 				}
-				else if(ready_queue->priority == 7){/*låt nod stanna, sänk prioriteten och returnera denna nod*/
-					ready_queue->priority--;
-					return ready_queue;
+				else if(ready_queue->priority == 3){
+					copy_task(&temporary, ready_queue);
+					ready_queue = pop(ready_queue);
+					tp.next = medium_queue;
+					tp.priority = 4;
+					temporary = create(tp.ID, tp.deadline, tp.release_time, tp.period, tp.priority, tp.quantum, tp.next);
+					medium_queue = temporary;
+					temporary = NULL;
 				}
-				else if(ready_queue->priority == 6){/*ta bort noden från ready queue, ändra prio och skicka nod till low*/
-					ready_queue->priority--;
-					low_queue = push(low_queue, *ready_queue);
-					ready_queue = remove_front(ready_queue);
+				else if(ready_queue->priority == 4){
+					copy_task(&temporary, ready_queue);
+					tp.priority = 5;
+					ready_queue = pop(ready_queue);
+					low_queue = push(low_queue, tp);
+					temporary = NULL;
 				}
-				else if(ready_queue->priority == 5){/*låt nod stanna, sänk prioriteten och returnera denna nod*/
-					ready_queue->priority--;
-					return ready_queue;
+				else if(ready_queue->priority > 4 && ready_queue->priority < 8){
+					copy_task(&temporary, ready_queue);
+					ready_queue = pop(ready_queue);
+					tp.next = low_queue;
+					tp.priority++;
+					temporary = create(tp.ID, tp.deadline, tp.release_time, tp.period, tp.priority, tp.quantum, tp.next);
+					low_queue = temporary;
+					temporary = NULL;
 				}
-				else if(ready_queue->priority == 4){/*låt nod stanna, sänk prioriteten och returnera denna nod*/
-					ready_queue->priority--;
-					return ready_queue;
-				}
-				else if(ready_queue->priority == 3){/*låt nod stanna, sänk prioriteten och returnera denna nod*/
-					ready_queue->priority--;
-					return ready_queue;
-				}
-				else if(ready_queue->priority == 2){/*ta bort noden från ready queue, ändra prio och skicka nod till high*/
-					ready_queue->priority = 8;
-					high_queue = push(high_queue, *ready_queue);
-					ready_queue = remove_front(ready_queue);
+				else if(ready_queue->priority >= 8){
+					copy_task(&temporary, ready_queue);
+					tp.priority = 5;
+					ready_queue = pop(ready_queue);
+					low_queue = push(low_queue, tp);
+					temporary = NULL;
 				}
 				else{
 					printf("ERROR");
 					return NULL;
 				}
-			}//om loopen avslutas så är listan, ready_queue, tom
+			}
 
-			if(high_queue != NULL){/*ta bort noden från ready queue och skicka nod till ready_queue och returnera nod*/
-				ready_queue = push(ready_queue, *high_queue);
-				high_queue = remove_front(high_queue);
+			temporary=&tp;
+
+			if(high_queue != NULL){
+				copy_task(&temporary, high_queue);
+				high_queue = pop(high_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
 				return ready_queue;
 			}
-			else if(medium_queue != NULL){/*ta bort noden från ready queue och skicka nod till ready_queue och returnera nod*/
-				ready_queue = push(ready_queue, *medium_queue);
-				medium_queue = remove_front(medium_queue);
+			else if(medium_queue != NULL){
+				copy_task(&temporary, medium_queue);
+				medium_queue = pop(medium_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
 				return ready_queue;
 			}
-			else if(low_queue != NULL){/*ta bort noden från ready queue och skicka nod till ready_queue och returnera nod*/
-				ready_queue = push(ready_queue, *low_queue);
-				low_queue = remove_front(low_queue);
+			else if(low_queue != NULL){
+				copy_task(&temporary, low_queue);
+				low_queue = pop(low_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
 				return ready_queue;
 			}
-			else{
+			else {
 				printf("ERROR");
 				return NULL;
 			}
+
 		}
 
 		if (sched_type == sched_EDF) 		//EDF scheduling algorithm
