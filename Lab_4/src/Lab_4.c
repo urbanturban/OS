@@ -1,10 +1,11 @@
 /*
  ============================================================================
- Name        : OSsched.c
- Author      : Jakob Danielsson
- Version     : 1.0
- Copyright   : Your copyright notice
- Description : RR scheduler simulator, Ansi-style
+ Name        : 	Lab_4.c
+ Author      : 	Jakob Danielsson, Akash Menon, Edvin Asmussen
+ Version     : 	1.0
+ Copyright   : 	Your copyright notice
+ Description : 	Round Robin, Shortest Job First, Earliest Deadline First and
+ 	 	 	 	Multi-Level Queue scheduler simulator, Ansi-style
  ============================================================================
  */
 
@@ -34,11 +35,11 @@ int context_switches = 0;
 
 
 typedef struct taskprop{
-    int deadline;		//Deadline of a task, not necesarry to use
-    int period;			//Periodicity of a task, not necesarry to use if you dont want to create a periodic scheduler such as rate monotonic. If you want to do this, talk with Jakob first
+    int deadline;		//Deadline of a task, not necessary to use
+    int period;			//Periodicity of a task, not necessary to use if you don't want to create a periodic scheduler such as rate monotonic. If you want to do this, talk with Jakob first
     int release_time;		//The time when a task is supposed to start, i.e., released from waiting queue
     int priority;		//Priority of task, can be used for the multiple queues
-    int ID;			//ID, to distinguish different tasks from eachother
+    int ID;			//ID, to distinguish different tasks from each other
     int quantum;		//How long the task has left to execute
     int queue_size;
     struct taskprop * next;
@@ -273,7 +274,8 @@ void readTaskset_n(char * filepath)
 	FILE *reads;											//File handle
 	char * sp;
 	if(task_set == CUSTOM_TASKSET){
-		sp = "/home/student/Desktop/Student_labs/OS/Lab_4/taskset.txt";
+		sp = "./taskset.txt";
+
 	}
 	else{
 		sp = "/home/student/Desktop/Labs_material/taskset.txt";								//File path
@@ -294,7 +296,12 @@ void readTaskset_n(char * filepath)
     }
     free(data_struct);										//Free the struct
 }
-
+//------------------Idle task - simulating background tasks that OS can perform when no other processes requires it---------
+task* run_idle_task(task* an_idle_task){
+			an_idle_task->quantum++;			//Make sure that the idle task dosnt run out of quantum
+			printf("RETURNED IDLE TASK ");
+			return an_idle_task;			//Return the idle task
+}
 //------------------Wake up task - moves tasks from waiting queue to ready queue------------------
 void OS_wakeup_n()
 {
@@ -321,7 +328,7 @@ void OS_wakeup_n()
 //------------------Scheduler, returns the task to be executed ------------------
 task * scheduler_n()
 {
-	if (ready_queue != NULL)			//If the ready queue isn't empty, we have tasks ready to be returned from the scheduler
+	if (ready_queue != NULL || sched_type == sched_MQ)			//If the ready queue isn't empty, we have tasks ready to be returned from the scheduler
 	{
 		if (sched_type == sched_RR) 		//Here is the round robin (RR) scheduler, in the RR case, we just return the first element of the ready queue
 		{
@@ -334,7 +341,89 @@ task * scheduler_n()
 		}
 		if (sched_type == sched_MQ) 		//Here is where you implement your MQ scheduling algorithm,
 		{
-			return ready_queue;
+			task tp;
+			task * temporary;
+			while(ready_queue != NULL){ //Transfer all tasks from rdy q based on priority to high,med, low queues
+				temporary=&tp;
+				if(ready_queue->priority == 1){//Om prion är 1 ska task läggas längst bak i high_queue, run tasks high queue once before pushing to medium queue
+					copy_task(&temporary, ready_queue);
+					tp.priority = 2;
+					ready_queue = pop(ready_queue);
+					high_queue = push(high_queue, tp);
+					temporary = NULL;
+				}
+				else if(ready_queue->priority == 2){ //run tasks in medium queue twice before pushing to low queue
+					copy_task(&temporary, ready_queue);
+					tp.priority = 3;
+					ready_queue = pop(ready_queue);
+					medium_queue = push(medium_queue, tp);
+					temporary = NULL;
+				}
+				else if(ready_queue->priority == 3){
+					copy_task(&temporary, ready_queue);
+					ready_queue = pop(ready_queue);
+					tp.next = medium_queue;
+					tp.priority = 4;
+					temporary = create(tp.ID, tp.deadline, tp.release_time, tp.period, tp.priority, tp.quantum, tp.next);
+					medium_queue = temporary;
+					temporary = NULL;
+				}
+				else if(ready_queue->priority == 4){ //run task at head 4 times before pushing it to back of low queue
+					copy_task(&temporary, ready_queue);
+					tp.priority = 5;
+					ready_queue = pop(ready_queue);
+					low_queue = push(low_queue, tp);
+					temporary = NULL;
+				}
+				else if(ready_queue->priority > 4 && ready_queue->priority < 8){
+					copy_task(&temporary, ready_queue);
+					ready_queue = pop(ready_queue);
+					tp.next = low_queue;
+					tp.priority++;
+					temporary = create(tp.ID, tp.deadline, tp.release_time, tp.period, tp.priority, tp.quantum, tp.next);
+					low_queue = temporary;
+					temporary = NULL;
+				}
+				else if(ready_queue->priority >= 8){
+					copy_task(&temporary, ready_queue);
+					tp.priority = 5;
+					ready_queue = pop(ready_queue);
+					low_queue = push(low_queue, tp);
+					temporary = NULL;
+				}
+				else{
+					printf("ERROR");
+					return NULL;
+				}
+			}
+
+			temporary=&tp;
+			//Check all level queues according to hierarchy of the queues, high, medium, low
+			if(high_queue != NULL){
+				copy_task(&temporary, high_queue);
+				high_queue = pop(high_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
+				return ready_queue;
+			}
+			else if(medium_queue != NULL){
+				copy_task(&temporary, medium_queue);
+				medium_queue = pop(medium_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
+				return ready_queue;
+			}
+			else if(low_queue != NULL){
+				copy_task(&temporary, low_queue);
+				low_queue = pop(low_queue);
+				ready_queue = push(ready_queue, tp);
+				temporary = NULL;
+				return ready_queue;
+			}
+			else { //if all level queues empty, run idle task.
+				return run_idle_task(idle_task);
+			}
+
 		}
 
 		if (sched_type == sched_EDF) 		//EDF scheduling algorithm
@@ -343,14 +432,14 @@ task * scheduler_n()
 			return ready_queue;
 		}
 	}
-	else						//If the ready queue is empty, the operating system must have something to do, therefore we return an idle task
+	else //If the ready queue is empty, the operating system must have something to do, therefore we return an idle task
 	{
-		idle_task->quantum++;			//Make sure that the idle task dosnt run out of quantum
-		printf("RETURNED IDLE TASK");
-		return idle_task;			//Return the idle task
+		return run_idle_task(idle_task);
 	}
 	return NULL;
 }
+
+
 //------------------ Dispatcher executes the task ------------------
 void dispatch_n(task* exec)
 {
@@ -391,6 +480,7 @@ void sched_picker(){ // user menu to avoid recompiling when showing different pa
 	printf("Choose scheduling policy: 1 = RR, 2 = SJF, 3 = MQ, 4 = EDF \n");
 	scanf("%d",&user_input);
 	if(user_input != 1 && user_input != 2 && user_input != 3 && user_input != 4){ // if other d input
+		printf("Invalid choice: Loading RR scheduling\n");
 		user_input = sched_RR; //Default round robin
 	}
 	sched_type = user_input; // scheduler_n() will pick correct scheduling algorithm.
@@ -398,6 +488,7 @@ void sched_picker(){ // user menu to avoid recompiling when showing different pa
 	printf("Choose taskset: 1 = default, 2 = custom\n");
 	scanf("%d", &user_input);
 	if(user_input != 1 && user_input != 2){ // if other d input
+		printf("Invalid choice: Loading Default taskset\n");
 		user_input = DEFAULT_TASKSET; //Default taskset.txt provided with lab.
 	}
 	task_set = user_input; // readTaskset_n() will load correct taskset.txt
@@ -414,6 +505,7 @@ int main(int argc, char **argv)
 	{
 		OS_wakeup_n();						//Wake up sleeping tasks
 		task_to_be_run = scheduler_n();		//Fetch the task to be run
+		printf("%d OS_cycle: ", OS_cycles);
 		dispatch_n(task_to_be_run);			//Dispatch the task to be run
 		OS_cycles++;						//Increment OS clock
 		usleep(1000000);					//Sleep so we dont get overflown with output
