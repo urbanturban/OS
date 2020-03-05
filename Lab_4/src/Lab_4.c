@@ -1,10 +1,11 @@
 /*
  ============================================================================
- Name        : OSsched.c
- Author      : Jakob Danielsson
- Version     : 1.0
- Copyright   : Your copyright notice
- Description : RR scheduler simulator, Ansi-style
+ Name        : 	Lab_4.c
+ Author      : 	Jakob Danielsson, Akash Menon, Edvin Asmussen
+ Version     : 	1.0
+ Copyright   : 	Your copyright notice
+ Description : 	Round Robin, Shortest Job First, Earliest Deadline First and
+ 	 	 	 	Multi-Level Queue scheduler simulator, Ansi-style
  ============================================================================
  */
 
@@ -34,11 +35,11 @@ int context_switches = 0;
 
 
 typedef struct taskprop{
-    int deadline;		//Deadline of a task, not necesarry to use
-    int period;			//Periodicity of a task, not necesarry to use if you dont want to create a periodic scheduler such as rate monotonic. If you want to do this, talk with Jakob first
+    int deadline;		//Deadline of a task, not necessary to use
+    int period;			//Periodicity of a task, not necessary to use if you don't want to create a periodic scheduler such as rate monotonic. If you want to do this, talk with Jakob first
     int release_time;		//The time when a task is supposed to start, i.e., released from waiting queue
     int priority;		//Priority of task, can be used for the multiple queues
-    int ID;			//ID, to distinguish different tasks from eachother
+    int ID;			//ID, to distinguish different tasks from each other
     int quantum;		//How long the task has left to execute
     int queue_size;
     struct taskprop * next;
@@ -295,7 +296,12 @@ void readTaskset_n(char * filepath)
     }
     free(data_struct);										//Free the struct
 }
-
+//------------------Idle task - simulating background tasks that OS can perform when no other processes requires it---------
+task* run_idle_task(task* an_idle_task){
+			an_idle_task->quantum++;			//Make sure that the idle task dosnt run out of quantum
+			printf("RETURNED IDLE TASK ");
+			return an_idle_task;			//Return the idle task
+}
 //------------------Wake up task - moves tasks from waiting queue to ready queue------------------
 void OS_wakeup_n()
 {
@@ -322,7 +328,7 @@ void OS_wakeup_n()
 //------------------Scheduler, returns the task to be executed ------------------
 task * scheduler_n()
 {
-	if (ready_queue != NULL)			//If the ready queue isn't empty, we have tasks ready to be returned from the scheduler
+	if (ready_queue != NULL || sched_type == sched_MQ)			//If the ready queue isn't empty, we have tasks ready to be returned from the scheduler
 	{
 		if (sched_type == sched_RR) 		//Here is the round robin (RR) scheduler, in the RR case, we just return the first element of the ready queue
 		{
@@ -337,16 +343,16 @@ task * scheduler_n()
 		{
 			task tp;
 			task * temporary;
-			while(ready_queue != NULL){
+			while(ready_queue != NULL){ //Transfer all tasks from rdy q based on priority to high,med, low queues
 				temporary=&tp;
-				if(ready_queue->priority == 1){//Om prion är 1 ska task läggas längst bak i high_queue
+				if(ready_queue->priority == 1){//Om prion är 1 ska task läggas längst bak i high_queue, run tasks high queue once before pushing to medium queue
 					copy_task(&temporary, ready_queue);
 					tp.priority = 2;
 					ready_queue = pop(ready_queue);
 					high_queue = push(high_queue, tp);
 					temporary = NULL;
 				}
-				else if(ready_queue->priority == 2){
+				else if(ready_queue->priority == 2){ //run tasks in medium queue twice before pushing to low queue
 					copy_task(&temporary, ready_queue);
 					tp.priority = 3;
 					ready_queue = pop(ready_queue);
@@ -362,7 +368,7 @@ task * scheduler_n()
 					medium_queue = temporary;
 					temporary = NULL;
 				}
-				else if(ready_queue->priority == 4){
+				else if(ready_queue->priority == 4){ //run task at head 4 times before pushing it to back of low queue
 					copy_task(&temporary, ready_queue);
 					tp.priority = 5;
 					ready_queue = pop(ready_queue);
@@ -392,7 +398,7 @@ task * scheduler_n()
 			}
 
 			temporary=&tp;
-
+			//Check all level queues according to hierarchy of the queues, high, medium, low
 			if(high_queue != NULL){
 				copy_task(&temporary, high_queue);
 				high_queue = pop(high_queue);
@@ -414,9 +420,8 @@ task * scheduler_n()
 				temporary = NULL;
 				return ready_queue;
 			}
-			else {
-				printf("ERROR");
-				return NULL;
+			else { //if all level queues empty, run idle task.
+				return run_idle_task(idle_task);
 			}
 
 		}
@@ -427,14 +432,14 @@ task * scheduler_n()
 			return ready_queue;
 		}
 	}
-	else						//If the ready queue is empty, the operating system must have something to do, therefore we return an idle task
+	else //If the ready queue is empty, the operating system must have something to do, therefore we return an idle task
 	{
-		idle_task->quantum++;			//Make sure that the idle task dosnt run out of quantum
-		printf("RETURNED IDLE TASK");
-		return idle_task;			//Return the idle task
+		return run_idle_task(idle_task);
 	}
 	return NULL;
 }
+
+
 //------------------ Dispatcher executes the task ------------------
 void dispatch_n(task* exec)
 {
@@ -500,6 +505,7 @@ int main(int argc, char **argv)
 	{
 		OS_wakeup_n();						//Wake up sleeping tasks
 		task_to_be_run = scheduler_n();		//Fetch the task to be run
+		printf("%d OS_cycle: ", OS_cycles);
 		dispatch_n(task_to_be_run);			//Dispatch the task to be run
 		OS_cycles++;						//Increment OS clock
 		usleep(1000000);					//Sleep so we dont get overflown with output
