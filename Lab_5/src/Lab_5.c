@@ -163,7 +163,7 @@ int LFU(frameType frames[], int n){
 	int pos = 1;	//börja en annan räknare vid 1
 
 	for( pos = 1; pos < n; pos++){	//gå igenom alla frames
-		if(frames[pos].uses < frames[leastUsedPos].uses){	//om denna frame blivit mindre använd..
+		if(frames[pos].uses <= frames[leastUsedPos].uses){	//om denna frame blivit mindre använd..
 			leastUsedPos = pos;	//byt till minst använda frames position
 		}
 	}
