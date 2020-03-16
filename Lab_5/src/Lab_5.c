@@ -17,12 +17,15 @@ void initilize (int *no_of_frames, int *no_of_references, int refs[], frameType 
     int i;
     FILE *fp;
     char fileName[50]="./ref.txt";
-
     fp = fopen(fileName, "r");
 
-    if(fp == NULL) {
-        printf("Failed to open file %s", fileName);
-        exit(-1);
+    if(fp == NULL) { //try the VM path otherwise
+    	char fileName[50]="/home/student/Desktop/Labs_material/ref.txt";
+    	fp = fopen(fileName, "r");
+    	if(fp == NULL) { // failed
+    	    printf("Failed to open file %s", fileName);
+    	    exit(-1);
+    	}
     }
 
     fscanf(fp,"%d", no_of_frames);                  //Get the number of frames
@@ -164,15 +167,16 @@ int LFU(frameType frames[], int n){
 			leastUsedPos = pos;	//byt till minst använda frames position
 		}
 	}
+
 	return leastUsedPos;	//skicka tillbaka första platsen som är minst oanvänd
 }
 
 int findPageToEvict(frameType frames[], int n, int counter, int no_of_references, int refs[]) {   //This is what you are supposed to change in the lab for LFU and OPT
     //return LRU(frames, n);                                   // Return that position
-    //return LFU(frames, n);	//Least Frequently Used
+    return LFU(frames, n);	//Least Frequently Used
     //return FIFO(frames, n);	//First In First Out
     //return OWN(frames, n, counter, no_of_references, refs);	//OWN algorithm
-    return OPT(frames, n, counter, no_of_references, refs);	//OPT
+    //return OPT(frames, n, counter, no_of_references, refs);	//OPT
 }
 
 //---- Main loops ref string, for each ref 1) check if ref is in memory, 2) if not, check if there is free frame, 3) if not, find a page to evict --
@@ -190,7 +194,7 @@ int main()
             if(frames[j].page == refs[i]) {         // Accessed ref is in memory
                 counter++;
                 frames[j].time = counter;           // Update the time stamp for this frame
-                frames[j].uses = frames[j].uses+1;//uppdatera antalet gånger denna page använts sen den sattes i en frame
+                frames[j].uses = frames[j].uses+1; //uppdatera antalet gånger denna page använts sen den sattes i en frame
                 page_fault_flag = no_free_mem_flag = 1; // Indicate no page fault (no page fault and no free memory frame needed)
                 free = -1;                          // Indicate no free mem frame needed (reporting purposes)
                 break;
